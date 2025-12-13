@@ -65,7 +65,7 @@ foreach (var row in sheet.GetAllRows())
 
 3) Lấy link tải trực tiếp từ cloud
 ```csharp
-using SlideGenerator.Framework.Http;
+using SlideGenerator.Framework.Cloud;
 
 using var http = new HttpClient();
 var directUrl = await CloudUrlResolver.ResolveAsync("https://drive.google.com/file/d/abc/view", http);

@@ -74,7 +74,7 @@ foreach (var row in sheet.GetAllRows())
 3. Resolve direct download links from cloud storage
 
 ```csharp
-using SlideGenerator.Framework.Http;
+using SlideGenerator.Framework.Cloud;
 
 using var http = new HttpClient();
 var directUrl = await CloudUrlResolver.ResolveAsync("https://drive.google.com/file/d/abc/view", http);
