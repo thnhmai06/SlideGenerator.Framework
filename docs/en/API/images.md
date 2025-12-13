@@ -10,7 +10,7 @@
 - ROI modes: `RoiType.Prominent` (spectral residual saliency) or `RoiType.Center`.
 
 ## Using in slides
-- Get target size: `ImageReplacer.GetPictureSize(...)` or `GetShapeSize(...)` (see [api-slides.md](api-slides.md)).
+- Get target size: `ImageReplacer.GetPictureSize(...)` or `GetShapeSize(...)` (see [Slides](slides.md)).
 - Replace image data: `ImageReplacer.ReplaceImage(SlidePart, Picture|Shape, Stream)` with a PNG stream.
 
 ## Dispose

@@ -8,9 +8,8 @@
 - Discover placeholders: `TextReplacer.ScanPlaceholders(string|SlidePart)` returns Mustache token names.
 - Replace text: `TextReplacer.Replace(...)` or `ReplaceAsync(...)` renders with a `Dictionary<string,string>`.
 
-## Shapes and pictures
+## Image replacement
 - Helpers to inspect content: `Presentation.GetPictures(...)`, `GetShapes(...)`, `GetPresentationTexts(...)`, `GetDrawingTexts(...)`.
-- Image insertion is covered in [api-images.md](api-images.md).
 
 ## Dispose
 - Dispose `TemplatePresentation` and `DerivedPresentation` to release OpenXML resources.

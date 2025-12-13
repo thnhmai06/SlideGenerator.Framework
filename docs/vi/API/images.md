@@ -10,8 +10,8 @@
 - ROI: `RoiType.Prominent` (vùng nổi bật) hoặc `RoiType.Center`.
 
 ## Dùng trong slide
-- Lấy kích thước mục tiêu: `ImageReplacer.GetPictureSize(...)` hoặc `GetShapeSize(...)` (xem [api-slides.vi.md](api-slides.vi.md)).
-- Thay dữ liệu ảnh: `ImageReplacer.ReplaceImage(SlidePart, Picture|Shape, Stream)` với stream PNG.
+- Lấy kích thước Shapes: `ImageReplacer.GetPictureSize(...)` hoặc `GetShapeSize(...)` (xem [Slides](slides.md)).
+- Thay thế ảnh: `ImageReplacer.ReplaceImage(SlidePart, Picture|Shape, Stream)` với stream PNG.
 
 ## Dispose
 - Dispose `ImageData` để giải phóng bộ nhớ native.
