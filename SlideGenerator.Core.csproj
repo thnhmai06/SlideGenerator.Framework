@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>14.0</LangVersion>
+		
+		<!-- NuGet Package Metadata -->
+		<PackageId>SlideGenerator.Core</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>thnhmai06</Authors>
+		<Description>A library for generating PowerPoint presentations from Excel data with intelligent image cropping and text replacement.</Description>
+		<PackageTags>PowerPoint;Excel;Slide;Generator;OpenXML;Presentation</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/thnhmai06/tao-slide-tot-nghiep</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
+		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />
+		<PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
+		<PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
+		<PackageReference Include="FreeSpire.Presentation" Version="9.3.0" />
+		<PackageReference Include="Stubble.Core" Version="1.10.8" />
+	</ItemGroup>
+
+</Project>
