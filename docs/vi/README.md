@@ -74,3 +74,8 @@ var directUrl = await CloudUrlResolver.ResolveAsync("https://drive.google.com/fi
 ### Ghi chú
 - Bản FreeSpire giới hạn 10 slide (phù hợp với library này).
 - Gọi `Dispose` cho các đối tượng để giải phóng native resources.
+
+## Người đóng góp
+
+- Phát triển Chính: [@thnhmai06](https://github.com/thnhmai06)
+- Logic cho Cloud: [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)

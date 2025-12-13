@@ -84,3 +84,8 @@ var directUrl = await CloudUrlResolver.ResolveAsync("https://drive.google.com/fi
 
 - The FreeSpire edition is limited to 10 slides (which fits this library’s scope).
 - Always call `Dispose` on objects to release native resources.
+
+## Contributors
+
+- Main developer: [@thnhmai06](https://github.com/thnhmai06)
+- Cloud logic:  [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)
