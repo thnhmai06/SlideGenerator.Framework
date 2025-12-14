@@ -7,14 +7,14 @@ A .NET framework for generating PowerPoint files from Excel data.
 ## Features
 
 - [Text and Image Replacement](docs/en/API/slides.md)
-- [Image Cropping by ROI](docs/en/API/images.md)
+- [Image Cropping by ROI](docs/en/API/images.md) - including face detection and saliency-based cropping
 - [Read Data from Excel Files](docs/en/API/sheets.md)
 - [Resolve Image Links from Cloud Storage](docs/en/API/cloud.md)
 
 ## Requirements
 
 - .NET 10
-- The corresponding [EmguCV](https://www.emgu.com/wiki/index.php/Download_And_Installation) runtime
+- The corresponding [EmguCV](https://www.emgu.com/wiki/index.php/Download_And_Installation) runtime (`mini` version is enough)
 
 ## Installation
 
@@ -26,7 +26,10 @@ A .NET framework for generating PowerPoint files from Excel data.
 ### Concepts
 
 - **Placeholder**: Mustache tokens like `{{name}}`; use `TextReplacer.ScanPlaceholders` to scan before replacing.
-- **Image cropping**: choose `RoiType.Prominent` (most salient area) or `RoiType.Center` (center crop), and provide the target size in pixels.
+- **Image cropping**: choose from three ROI modes:
+  - `RoiType.Prominent` - crops to the most visually salient area using spectral residual analysis
+  - `RoiType.Center` - simple center crop
+  - `RoiType.Attention` - intelligent cropping that combines face detection with saliency for optimal human-centric framing
 - **Slide**: `TemplatePresentation` must contain exactly one slide; `DerivedPresentation` duplicates the slide, replaces text/images, and saves the output file.
 - **Sheet**: `Workbook` is based on ClosedXML; each row is represented as a dictionary keyed by headers; if a worksheet is missing, a `WorksheetNotFoundException` is thrown.
 
@@ -40,6 +43,7 @@ using SlideGenerator.Framework.Slide.Models;
 using SlideGenerator.Framework.Image;
 using SlideGenerator.Framework.Image.Enums;
 using SlideGenerator.Framework.Image.Models;
+using SlideGenerator.Framework.Image.Configs;
 
 using var template = new TemplatePresentation("template.pptx");
 using var deck = new DerivedPresentation("output.pptx", template);
@@ -47,11 +51,32 @@ var slidePart = deck.GetSlidePart(template.MainSlideRelationshipId);
 
 TextReplacer.Replace(slidePart, new() { ["title"] = "Quarterly Report", ["owner"] = "Data Team" });
 
+// Create ImageProcessor with custom ROI options for face detection
+// ExpandRatio supports 4-direction independent padding: top, bottom, left, right
+var roiOptions = new RoiOptions 
+{ 
+    FaceConfidence = 0.7f,
+    FacePaddingRatio = new ExpandRatio(
+        top: 0.25f,     // More space for hair
+        bottom: 0.15f,  // Less space below
+        left: 0.20f,
+        right: 0.20f
+    ),
+    FacesUnionAll = true,
+    SaliencyPaddingRatio = new ExpandRatio(0.0f)  // Uniform padding
+};
+using var processor = new ImageProcessor(roiOptions);
+await processor.InitFaceModelAsync(); // Initialize face detection model
+
 var picture = Presentation.GetPictures(slidePart).First();
 var targetSize = ImageReplacer.GetPictureSize(picture);
 using var img = new ImageData("photo.jpg");
-using var cropped = ImageProcessor.CropToRoiCopy(img, RoiType.Prominent, targetSize);
-using var stream = new MemoryStream(cropped.ToByteArray());
+
+// Use Attention mode for intelligent face + saliency cropping
+var roi = processor.GetRoi(img, targetSize, RoiType.Attention);
+ImageProcessor.Crop(img, roi);
+
+using var stream = new MemoryStream(img.ToByteArray());
 ImageReplacer.ReplaceImage(slidePart, picture, stream);
 
 deck.Save();
@@ -82,8 +107,13 @@ var directUrl = await CloudUrlResolver.ResolveAsync("https://drive.google.com/fi
 
 ### Notes
 
-- The FreeSpire edition is limited to 10 slides (which fits this library’s scope).
+- The FreeSpire edition is limited to 10 slides (which fits this library's scope).
 - Always call `Dispose` on objects to release native resources.
+- Face detection (for `RoiType.Attention`) requires calling `InitFaceModelAsync()` before use.
+- `ExpandRatio` supports flexible padding configurations:
+  - `new ExpandRatio(allSides)` - uniform padding
+  - `new ExpandRatio(vertical, horizontal)` - vertical/horizontal padding
+  - `new ExpandRatio(top, bottom, left, right)` - independent 4-direction padding
 
 ## Contributors
 

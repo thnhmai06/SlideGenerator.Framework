@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
-using Stubble.Core.Builders;
 using SlideGenerator.Framework.Slide.Models;
+using Stubble.Core.Builders;
 
 namespace SlideGenerator.Framework.Slide;
 

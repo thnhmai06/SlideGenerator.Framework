@@ -11,7 +11,7 @@ namespace SlideGenerator.Framework.Image.Models;
 /// <summary>
 ///     Represents an image with support for manipulation and saving.
 /// </summary>
-public sealed class ImageData : IDisposable
+public sealed class ImageData : IDisposable, ICloneable
 {
     private bool _disposed;
 
@@ -98,6 +98,11 @@ public sealed class ImageData : IDisposable
     /// </summary>
     public Size Size => new(Mat.Width, Mat.Height);
 
+    public object Clone()
+    {
+        return new ImageData(ToByteArray(), FilePath);
+    }
+
     public void Dispose()
     {
         if (_disposed) return;
@@ -154,10 +159,48 @@ public sealed class ImageData : IDisposable
     /// <param name="roi">The region of interest to crop.</param>
     public void CropInPlace(Rectangle roi)
     {
-        var cropped = new Mat(Mat, roi);
-        var cloned = cropped.Clone();
+        var croppedMat = new Mat(Mat, roi);
+        var cloned = croppedMat.Clone();
+
         Mat.Dispose();
         Mat = cloned;
-        cropped.Dispose();
+        croppedMat.Dispose();
+    }
+
+    /// <summary>
+    ///     Create a resized copy of the underlying image.
+    /// </summary>
+    /// <remarks>
+    ///     The original image remains unchanged. The resizing operation uses area-based interpolation,
+    ///     which is generally preferred for image shrinking to preserve quality.
+    /// </remarks>
+    /// <param name="size">The new size</param>
+    /// <returns>A new ImageData instance containing the resized image.</returns>
+    public ImageData Resize(Size size)
+    {
+        var res = new Mat();
+        CvInvoke.Resize(Mat, res, size, 0, 0, Inter.Area);
+        var result = new ImageData(ToByteArray(), FilePath)
+        {
+            Mat = res
+        };
+        return result;
+    }
+
+    /// <summary>
+    ///     Resize this image in place.
+    /// </summary>
+    /// <remarks>
+    ///     This method modifies the current image by resizing it and discarding the original data. After
+    ///     calling this method, any references to the previous image data become invalid.
+    /// </remarks>
+    /// <param name="size">The new size</param>
+    public void ResizeInPlace(Size size)
+    {
+        var resizedMat = new Mat();
+        CvInvoke.Resize(Mat, resizedMat, size, 0, 0, Inter.Area);
+
+        Mat.Dispose();
+        Mat = resizedMat;
     }
 }
