@@ -5,12 +5,18 @@
 - `ImageData.Save(path?)` writes PNG; `ToByteArray()` returns PNG bytes.
 
 ## Cropping and ROI
-- `ImageProcessor.GetRoi(image, RoiType, Size)` returns a rectangle for the target size.
-- `ImageProcessor.Crop(image, roi)` crops in place; `CropToRoiCopy(...)` returns a new image.
-- ROI modes:
+- `ImageProcessor.Crop(image, rect)` crops in place to a given rectangle.
+- `ImageProcessor.Resize(image, size)` resizes in place.
+- `var getRoi = processor.GetRoiFunc(roiType)` returns an async ROI selector (`AsyncRoiSelector`) for the requested mode.
+- `await ImageProcessor.CropToRoiAsync(image, targetSize, getRoi, cropType)` crops in place based on the ROI selector and crop strategy.
+- ROI modes (`RoiType`):
   - `RoiType.Prominent` - spectral residual saliency (most visually prominent region)
   - `RoiType.Center` - simple center crop
   - `RoiType.Attention` - combines face detection with saliency for human-centric cropping
+
+- Crop strategies (`CropType`):
+  - `CropType.Crop` - crop exactly to the ROI rectangle.
+  - `CropType.Fit` - choose an ROI with matching aspect ratio, then resize to the target size.
 
 ## ROI Options
 - `RoiOptions` configures face detection and padding for `RoiType.Attention`:
@@ -23,6 +29,7 @@
   - `SaliencyPaddingRatio` - padding around saliency anchor, also supports 4-direction configuration
 - Create `ImageProcessor` with custom options: `new ImageProcessor(roiOptions)`
 - Face detection requires initialization: `await processor.InitFaceModelAsync()`
+- Check readiness without blocking via `processor.IsFaceAvailable`.
 
 ## Examples
 

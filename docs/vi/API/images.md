@@ -5,12 +5,18 @@
 - `ImageData.Save(path?)` lưu PNG; `ToByteArray()` trả về bytes PNG.
 
 ## Cắt và ROI
-- `ImageProcessor.GetRoi(image, RoiType, Size)` lấy rectangle cho kích thước đích.
-- `ImageProcessor.Crop(image, roi)` cắt tại chỗ; `CropToRoiCopy(...)` tạo ảnh mới.
-- Các chế độ ROI:
+- `ImageProcessor.Crop(image, rect)` cắt tại chỗ theo rectangle cho trước.
+- `ImageProcessor.Resize(image, size)` thay đổi kích thước ảnh tại chỗ.
+- `var getRoi = processor.GetRoiFunc(roiType)` trả về async ROI selector (`AsyncRoiSelector`) cho chế độ mong muốn.
+- `await ImageProcessor.CropToRoiAsync(image, targetSize, getRoi, cropType)` cắt ảnh tại chỗ dựa trên ROI selector và chiến lược cắt.
+- Các chế độ ROI (`RoiType`):
   - `RoiType.Prominent` - phân tích spectral residual để tìm vùng nổi bật nhất
   - `RoiType.Center` - cắt đơn giản ở giữa
   - `RoiType.Attention` - cắt thông minh kết hợp nhận diện khuôn mặt với độ nổi bật cho ảnh người
+
+- Chiến lược cắt (`CropType`):
+  - `CropType.Crop` - cắt đúng theo rectangle ROI.
+  - `CropType.Fit` - chọn ROI có tỉ lệ khung hình phù hợp rồi resize về kích thước đích.
 
 ## Tùy chọn ROI
 - `RoiOptions` cấu hình nhận diện khuôn mặt và padding cho `RoiType.Attention`:
@@ -23,6 +29,7 @@
   - `SaliencyPaddingRatio` - padding xung quanh vùng nổi bật, cũng hỗ trợ 4 hướng như trên
 - Tạo `ImageProcessor` với tùy chọn: `new ImageProcessor(roiOptions)`
 - Nhận diện khuôn mặt yêu cầu khởi tạo: `await processor.InitFaceModelAsync()`
+- Có thể kiểm tra nhanh trạng thái sẵn sàng (non-blocking) qua `processor.IsFaceAvailable`.
 
 ## Ví dụ
 

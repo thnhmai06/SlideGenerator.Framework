@@ -67,8 +67,8 @@ var targetSize = ImageReplacer.GetPictureSize(picture);
 using var img = new ImageData("photo.jpg");
 
 // Dùng chế độ Attention để cắt thông minh kết hợp khuôn mặt + độ nổi bật
-var roi = processor.GetRoi(img, targetSize, RoiType.Attention);
-ImageProcessor.Crop(img, roi);
+var getRoi = processor.GetRoiFunc(RoiType.Attention);
+await ImageProcessor.CropToRoiAsync(img, targetSize, getRoi, CropType.Fit);
 
 using var stream = new MemoryStream(img.ToByteArray());
 ImageReplacer.ReplaceImage(slidePart, picture, stream);
