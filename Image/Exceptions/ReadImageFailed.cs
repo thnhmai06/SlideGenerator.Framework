@@ -3,15 +3,15 @@ namespace SlideGenerator.Framework.Image.Exceptions;
 /// <summary>
 ///     Exception thrown when reading an image file fails.
 /// </summary>
-public class ImageReadException : Exception
+public class ReadImageFailed : Exception
 {
-    public ImageReadException(string filePath)
+    public ReadImageFailed(string filePath)
         : base($"Failed to read image from: {filePath}")
     {
         FilePath = filePath;
     }
 
-    public ImageReadException(string filePath, Exception innerException)
+    public ReadImageFailed(string filePath, Exception innerException)
         : base($"Failed to read image from: {filePath}", innerException)
     {
         FilePath = filePath;

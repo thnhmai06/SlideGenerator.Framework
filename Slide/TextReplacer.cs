@@ -5,6 +5,8 @@ using Stubble.Core.Builders;
 
 namespace SlideGenerator.Framework.Slide;
 
+using ReplaceInstructions = Dictionary<string, string>;
+
 /// <summary>
 ///     Provides text replacement functionality for slides using Mustache templates.
 /// </summary>
@@ -61,10 +63,12 @@ public static partial class TextReplacer
     /// <param name="slidePart">The slide part to modify.</param>
     /// <param name="replacements">Dictionary mapping placeholder names to replacement values.</param>
     /// <returns>The number of replacements made.</returns>
-    public static async Task<uint> ReplaceAsync(SlidePart slidePart, Dictionary<string, string> replacements)
+    public static async Task<uint> ReplaceAsync(SlidePart slidePart, ReplaceInstructions replacements)
     {
-        var stubble = new StubbleBuilder().Build();
         uint replacedCount = 0;
+        if (replacements.Count == 0) return replacedCount;
+
+        var stubble = new StubbleBuilder().Build();
 
         // Replace in presentation text
         var presentationTexts = Presentation.GetPresentationTexts(slidePart);
@@ -99,7 +103,7 @@ public static partial class TextReplacer
     /// <param name="slidePart">The slide part to modify.</param>
     /// <param name="replacements">Dictionary mapping placeholder names to replacement values.</param>
     /// <returns>The number of replacements made.</returns>
-    public static uint Replace(SlidePart slidePart, Dictionary<string, string> replacements)
+    public static uint Replace(SlidePart slidePart, ReplaceInstructions replacements)
     {
         return ReplaceAsync(slidePart, replacements).GetAwaiter().GetResult();
     }

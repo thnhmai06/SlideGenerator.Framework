@@ -20,16 +20,16 @@ public sealed class TemplatePresentation : Presentation
     ///     Opens a template presentation.
     /// </summary>
     /// <param name="filePath">Path to the presentation file.</param>
-    /// <exception cref="InvalidTemplateException">Thrown when the presentation does not have exactly one slide.</exception>
+    /// <exception cref="TemplateNotOneSlide">Thrown when the presentation does not have exactly one slide.</exception>
     public TemplatePresentation(string filePath) : base(filePath, true)
     {
         var slideIds = GetSlideIdList().ChildElements;
         if (slideIds.Count != 1)
-            throw new InvalidTemplateException(filePath, slideIds.Count);
+            throw new TemplateNotOneSlide(filePath, slideIds.Count);
 
         var slideId = (SlideId)slideIds[FirstSlideIndex];
         MainSlideRelationshipId = slideId.RelationshipId?.Value
-                                  ?? throw new InvalidPresentationException(filePath,
+                                  ?? throw new InvalidPresentation(filePath,
                                       $"No relationship ID for slide {FirstSlideIndex + 1}.");
 
         _spirePresentation.LoadFromFile(filePath);

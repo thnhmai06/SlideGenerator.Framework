@@ -20,7 +20,7 @@ public sealed class ImageData : IDisposable, ICloneable
     /// </summary>
     /// <param name="filePath">Path to the image file.</param>
     /// <exception cref="FileNotFoundException">Thrown when the file does not exist.</exception>
-    /// <exception cref="ImageReadException">Thrown when the image cannot be read.</exception>
+    /// <exception cref="ReadImageFailed">Thrown when the image cannot be read.</exception>
     public ImageData(string filePath)
     {
         FilePath = filePath;
@@ -33,20 +33,20 @@ public sealed class ImageData : IDisposable, ICloneable
             var pixels = magickImage.GetPixels();
             var bytes = pixels.ToByteArray(PixelMapping.BGR);
             if (bytes == null)
-                throw new ImageReadException(filePath);
+                throw new ReadImageFailed(filePath);
 
             Mat = new Mat((int)magickImage.Height, (int)magickImage.Width, DepthType.Cv8U, 3);
             Marshal.Copy(bytes, 0, Mat.DataPointer, bytes.Length);
             if (Mat.IsEmpty)
-                throw new ImageReadException(filePath);
+                throw new ReadImageFailed(filePath);
         }
-        catch (ImageReadException)
+        catch (ReadImageFailed)
         {
             throw;
         }
         catch (Exception ex)
         {
-            throw new ImageReadException(filePath, ex);
+            throw new ReadImageFailed(filePath, ex);
         }
     }
 
@@ -55,7 +55,7 @@ public sealed class ImageData : IDisposable, ICloneable
     /// </summary>
     /// <param name="bytes">Image data as byte array.</param>
     /// <param name="sourceName">Optional name for error messages.</param>
-    /// <exception cref="ImageReadException">Thrown when the image cannot be read.</exception>
+    /// <exception cref="ReadImageFailed">Thrown when the image cannot be read.</exception>
     public ImageData(byte[] bytes, string sourceName = "memory")
     {
         FilePath = sourceName;
@@ -66,20 +66,20 @@ public sealed class ImageData : IDisposable, ICloneable
             var pixels = magickImage.GetPixels();
             var bgrBytes = pixels.ToByteArray(PixelMapping.BGR);
             if (bgrBytes == null)
-                throw new ImageReadException(sourceName);
+                throw new ReadImageFailed(sourceName);
 
             Mat = new Mat((int)magickImage.Height, (int)magickImage.Width, DepthType.Cv8U, 3);
             Marshal.Copy(bgrBytes, 0, Mat.DataPointer, bgrBytes.Length);
             if (Mat.IsEmpty)
-                throw new ImageReadException(sourceName);
+                throw new ReadImageFailed(sourceName);
         }
-        catch (ImageReadException)
+        catch (ReadImageFailed)
         {
             throw;
         }
         catch (Exception ex)
         {
-            throw new ImageReadException(sourceName, ex);
+            throw new ReadImageFailed(sourceName, ex);
         }
     }
 
@@ -108,22 +108,6 @@ public sealed class ImageData : IDisposable, ICloneable
         if (_disposed) return;
         _disposed = true;
         Mat.Dispose();
-    }
-
-    /// <summary>
-    ///     Saves the image to the specified file path in PNG format.
-    /// </summary>
-    /// <param name="savePath">The path to save the image to. If null, saves to the original path.</param>
-    public void Save(string? savePath = null)
-    {
-        savePath ??= FilePath;
-
-        using var buffer = new VectorOfByte();
-        CvInvoke.Imencode(".png", Mat, buffer);
-        var bytes = buffer.ToArray();
-
-        using var magick = new MagickImage(bytes);
-        magick.Write(savePath);
     }
 
     /// <summary>

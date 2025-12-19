@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using ClosedXML.Excel;
 using SlideGenerator.Framework.Sheet.Contracts;
-using SlideGenerator.Framework.Sheet.Exceptions;
 
 namespace SlideGenerator.Framework.Sheet.Models;
 
@@ -47,11 +46,9 @@ public sealed class Workbook : IWorkbook
     public IReadOnlyDictionary<string, IWorksheet> Worksheets => _worksheets;
 
     /// <inheritdoc />
-    public Dictionary<string, int> GetWorksheetsInfo()
-    {
-        return _worksheets.ToDictionary(t => t.Key, t => t.Value.RowCount);
-    }
-
+    public IReadOnlyDictionary<string, int> GetWorksheetsInfo()
+        => _worksheets.ToDictionary(t => t.Key, t => t.Value.RowCount);
+    
     public void Dispose()
     {
         if (_disposed) return;
@@ -64,11 +61,6 @@ public sealed class Workbook : IWorkbook
     /// </summary>
     /// <param name="name">The name of the worksheet.</param>
     /// <returns>The worksheet.</returns>
-    /// <exception cref="WorksheetNotFoundException">Thrown when the worksheet is not found.</exception>
-    public IWorksheet GetWorksheet(string name)
-    {
-        return !_worksheets.TryGetValue(name, out var worksheet)
-            ? throw new WorksheetNotFoundException(name, FilePath)
-            : worksheet;
-    }
+    public IWorksheet? GetWorksheet(string name)
+        => _worksheets.GetValueOrDefault(name);
 }

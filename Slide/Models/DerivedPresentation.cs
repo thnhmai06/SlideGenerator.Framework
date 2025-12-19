@@ -29,24 +29,20 @@ public sealed class DerivedPresentation : Presentation
     }
 
     /// <summary>
-    ///     Gets the number of slides in the presentation.
-    /// </summary>
-    public int SlideCount => GetSlideIdList().Count();
-
-    /// <summary>
     ///     Saves the presentation.
     /// </summary>
     public void Save()
-    {
-        GetPresentationPart().Presentation.Save();
-    }
+        => GetPresentationPart().Presentation.Save();
 
     /// <summary>
     ///     Copies a slide and inserts it at the specified position.
     /// </summary>
     /// <param name="slideRid">Relationship ID of the slide to copy.</param>
-    /// <param name="position">Position that new slide will have (1-based). If 0 or greater than count, appends to end.</param>
-    /// <returns>The slide part of the new slide.</returns>
+    /// <param name="position">
+    /// Position that new slide will have (1-based).
+    /// If below than 0 or greater than current total slides, appends to end.
+    /// </param>
+    /// <returns>The slide part of the copied slide.</returns>
     public SlidePart CopySlide(string slideRid, int position = -1)
     {
         var presentationPart = GetPresentationPart();
@@ -86,7 +82,6 @@ public sealed class DerivedPresentation : Presentation
         else
             slideIdList.InsertAt(newSlideId, position - 1);
 
-        presentationPart.Presentation.Save();
         return newSlide;
     }
 

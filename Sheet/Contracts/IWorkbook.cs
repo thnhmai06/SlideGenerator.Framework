@@ -24,5 +24,5 @@ public interface IWorkbook : IDisposable
     ///     Gets information about all worksheets (name and row count).
     /// </summary>
     /// <returns>A dictionary mapping worksheet names to row counts.</returns>
-    Dictionary<string, int> GetWorksheetsInfo();
+    IReadOnlyDictionary<string, int> GetWorksheetsInfo();
 }

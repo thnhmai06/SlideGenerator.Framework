@@ -1,5 +1,7 @@
 namespace SlideGenerator.Framework.Sheet.Contracts;
 
+using RowContent = Dictionary<string, string?>;
+
 /// <summary>
 ///     Represents a worksheet within a workbook.
 /// </summary>
@@ -25,11 +27,11 @@ public interface IWorksheet
     /// </summary>
     /// <param name="rowNumber">The row number (1-based).</param>
     /// <returns>A dictionary mapping column headers to cell values.</returns>
-    Dictionary<string, string?> GetRow(int rowNumber);
+    RowContent GetRow(int rowNumber);
 
     /// <summary>
     ///     Gets all data rows from the worksheet.
     /// </summary>
     /// <returns>A list of dictionaries, each representing a row.</returns>
-    List<Dictionary<string, string?>> GetAllRows();
+    List<RowContent> GetAllRows();
 }

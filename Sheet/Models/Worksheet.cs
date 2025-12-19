@@ -1,6 +1,8 @@
 using ClosedXML.Excel;
 using SlideGenerator.Framework.Sheet.Contracts;
 
+using RowContent = System.Collections.Generic.Dictionary<string, string?>;
+
 namespace SlideGenerator.Framework.Sheet.Models;
 
 /// <summary>
@@ -62,13 +64,13 @@ internal sealed class Worksheet : IWorksheet
     ///     Thrown when <paramref name="rowNumber" /> is less than 1 or greater than the
     ///     total number of rows.
     /// </exception>
-    public Dictionary<string, string?> GetRow(int rowNumber)
+    public RowContent GetRow(int rowNumber)
     {
         if (rowNumber < 1 || rowNumber > RowCount)
             throw new IndexOutOfRangeException($"Row index {rowNumber} is out of range [1, {RowCount}].");
 
         var actualRow = _minRow + rowNumber;
-        var rowData = new Dictionary<string, string?>();
+        var rowData = new RowContent();
 
         for (var col = _minCol; col <= _maxCol; col++)
         {
@@ -93,9 +95,9 @@ internal sealed class Worksheet : IWorksheet
     ///     A list of dictionaries containing all rows. Each dictionary maps column names to their corresponding string
     ///     values; values may be null if the cell is empty.
     /// </returns>
-    public List<Dictionary<string, string?>> GetAllRows()
+    public List<RowContent> GetAllRows()
     {
-        var rows = new List<Dictionary<string, string?>>();
+        var rows = new List<RowContent>();
         for (var i = 1; i <= RowCount; i++)
             rows.Add(GetRow(i));
 

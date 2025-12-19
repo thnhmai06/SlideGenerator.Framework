@@ -26,11 +26,11 @@ public static class ImageReplacer
 
         var blip = picture.Descendants<Blip>().FirstOrDefault();
         if (blip is null)
-            throw new ImageNotFoundInShapeException(GetPictureId(picture), "No Blip element found.");
+            throw new ShapeDoesNotHaveImage(GetPictureId(picture), "No Blip element found.");
 
         var embed = blip.Embed;
         if (embed is null)
-            throw new ImageNotFoundInShapeException(GetPictureId(picture), "No Embed reference in Blip.");
+            throw new ShapeDoesNotHaveImage(GetPictureId(picture), "No Embed reference in Blip.");
 
         embed.Value = rId;
         slidePart.Slide.Save();
@@ -60,7 +60,7 @@ public static class ImageReplacer
         }
 
         if (blip?.Embed == null)
-            throw new ImageNotFoundInShapeException(GetShapeId(shape), "No Blip element found in shape fill.");
+            throw new ShapeDoesNotHaveImage(GetShapeId(shape), "No Blip element found in shape fill.");
 
         blip.Embed.Value = rId;
         slidePart.Slide.Save();

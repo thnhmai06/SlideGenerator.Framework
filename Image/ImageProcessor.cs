@@ -37,7 +37,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
             return model;
         }, LazyThreadSafetyMode.ExecutionAndPublication);
 
-    // FaceDetectorYNModel.Detect is typically NOT thread-safe -> serialize usage.
+    // FaceDetectorYNModel.Detect is typically NOT thread-safe => serialize usage.
     private readonly SemaphoreSlim _faceDetectGate = new(1, 1);
 
     /// <summary>
@@ -49,7 +49,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     ///     Indicates whether the face model has been successfully initialized and is ready for use.
     ///     This property is non-blocking.
     /// </summary>
-    public bool IsFaceAvailable
+    public bool IsFaceModelAvailable
     {
         get
         {
@@ -124,7 +124,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
         using var saliencyMap = new Mat();
 
         var ok = saliency.Compute(image.Mat, saliencyMap);
-        if (!ok) throw new SaliencyComputationException(image.FilePath);
+        if (!ok) throw new ComputeSaliencyFailed(image.FilePath);
 
         using var outMap = new Mat();
         saliencyMap.ConvertTo(outMap, DepthType.Cv32F);
@@ -160,7 +160,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// </summary>
     /// <param name="image">The image to crop (modified in place).</param>
     /// <param name="targetSize">The target size for cropping.</param>
-    /// <param name="getRoiFunc">
+    /// <param name="roiSelector">
     ///     An asynchronous selector that computes the crop region (ROI)
     ///     for a given image and target size.
     /// </param>
@@ -168,23 +168,24 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// <returns>
     ///     A task that represents the asynchronous crop operation.
     /// </returns>
-    public static async ValueTask CropToRoiAsync(ImageData image,
+    public static async ValueTask CropToRoiAsync(
+        ImageData image,
         Size targetSize,
-        AsyncRoiSelector getRoiFunc,
+        AsyncRoiSelector roiSelector,
         CropType cropType)
     {
         switch (cropType)
         {
             case CropType.Crop:
                 {
-                    var roi = await getRoiFunc(image, targetSize).ConfigureAwait(false);
+                    var roi = await roiSelector(image, targetSize).ConfigureAwait(false);
                     image.CropInPlace(roi);
                     break;
                 }
             case CropType.Fit:
                 {
                     var maxSize = GetMaxAspectSize(image.Size, targetSize);
-                    var roi = await getRoiFunc(image, maxSize).ConfigureAwait(false);
+                    var roi = await roiSelector(image, maxSize).ConfigureAwait(false);
                     image.CropInPlace(roi);
                     Resize(image, targetSize);
                     break;
@@ -202,7 +203,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     ///     A <see cref="AsyncRoiSelector" /> that computes a region of interest
     ///     for a given image and target size.
     /// </returns>
-    public AsyncRoiSelector GetRoiFunc(RoiType roiType)
+    public AsyncRoiSelector GetRoiSelector(RoiType roiType)
     {
         return roiType switch
         {
