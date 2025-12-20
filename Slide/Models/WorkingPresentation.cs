@@ -17,12 +17,17 @@ public sealed class WorkingPresentation : Presentation
     {
     }
 
+    internal WorkingPresentation(PresentationDocument doc, string filePath)
+        : base(doc, filePath)
+    {
+    }
+
     /// <summary>
     ///     Saves the presentation.
     /// </summary>
     public void Save()
     {
-        GetPresentationPart().Presentation.Save();
+        GetPresentationPart()!.Presentation.Save();
     }
 
     /// <summary>
@@ -38,10 +43,10 @@ public sealed class WorkingPresentation : Presentation
     {
         var presentationPart = GetPresentationPart();
         var sourceSlide = GetSlidePart(slideRid);
-        var newSlide = presentationPart.AddNewPart<SlidePart>();
+        var newSlide = presentationPart!.AddNewPart<SlidePart>();
 
         // Copy slide XML
-        newSlide.FeedData(sourceSlide.GetStream());
+        newSlide.FeedData(sourceSlide!.GetStream());
 
         // Copy resource references
         foreach (var rel in sourceSlide.Parts)
@@ -61,7 +66,7 @@ public sealed class WorkingPresentation : Presentation
 
         // Add to slide list
         var slideIdList = GetSlideIdList();
-        var maxId = slideIdList.ChildElements.Cast<SlideId>().Max(x => x.Id?.Value);
+        var maxId = slideIdList!.ChildElements.Cast<SlideId>().Max(x => x.Id?.Value);
         var newSlideId = new SlideId
         {
             Id = maxId + 1 ?? 0,
@@ -83,7 +88,7 @@ public sealed class WorkingPresentation : Presentation
     public void RemoveSlide(int position)
     {
         var slideIdList = GetSlideIdList();
-        var slide = slideIdList.ChildElements.Cast<SlideId>().ElementAt(position - 1);
+        var slide = slideIdList!.ChildElements.Cast<SlideId>().ElementAt(position - 1);
         slide?.Remove();
     }
 }

@@ -5,17 +5,17 @@ namespace SlideGenerator.Framework.Image.Exceptions;
 /// </summary>
 public class ReadImageFailed : Exception
 {
-    public ReadImageFailed(string filePath)
-        : base($"Failed to read image from: {filePath}")
+    public ReadImageFailed(string sourceName)
+        : base($"Failed to read image from: {sourceName}")
     {
-        FilePath = filePath;
+        SourceName = sourceName;
     }
 
-    public ReadImageFailed(string filePath, Exception innerException)
-        : base($"Failed to read image from: {filePath}", innerException)
+    public ReadImageFailed(string sourceName, Exception innerException)
+        : base($"Failed to read image from: {sourceName}", innerException)
     {
-        FilePath = filePath;
+        SourceName = sourceName;
     }
 
-    public string FilePath { get; }
+    public string SourceName { get; }
 }

@@ -12,7 +12,7 @@ using ReplaceInstructions = Dictionary<string, string>;
 /// </summary>
 public static partial class TextReplacer
 {
-    private const string TemplatePattern = @"\{\{([\w\d\s]+)\}\}";
+    private const string TemplatePattern = @"\{\{([\w\d\s]+)\}\}"; // {{ placeholder }}
 
     [GeneratedRegex(TemplatePattern)]
     private static partial Regex TemplateRegex();

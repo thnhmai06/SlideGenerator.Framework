@@ -2,11 +2,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideGenerator.Framework.Slide.Exceptions;
 using Path = System.IO.Path;
 using Picture = DocumentFormat.OpenXml.Drawing.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
-using Text = DocumentFormat.OpenXml.Presentation.Text;
+using PresentationText = DocumentFormat.OpenXml.Presentation.Text;
+using DrawingText = DocumentFormat.OpenXml.Drawing.Text;
 
 namespace SlideGenerator.Framework.Slide.Models;
 
@@ -15,7 +15,7 @@ namespace SlideGenerator.Framework.Slide.Models;
 /// </summary>
 public abstract class Presentation : IDisposable
 {
-    private readonly PresentationDocument _doc;
+    internal readonly PresentationDocument Doc;
     private bool _disposed;
 
     /// <summary>
@@ -26,9 +26,20 @@ public abstract class Presentation : IDisposable
     protected Presentation(string filePath, bool isEditable)
     {
         FilePath = filePath;
-        _doc = !Path.Exists(filePath)
+        Doc = !Path.Exists(filePath)
             ? PresentationDocument.Create(filePath, PresentationDocumentType.Presentation)
             : PresentationDocument.Open(filePath, isEditable);
+    }
+
+    /// <summary>
+    ///     Creates a new presentation instance from existing OpenXML presentation document.
+    /// </summary>
+    /// <param name="doc">The OpenXML presentation document.</param>
+    /// <param name="filePath">Path to the presentation file.</param>
+    internal Presentation(PresentationDocument doc, string filePath)
+    {
+        FilePath = filePath;
+        Doc = doc;
     }
 
     /// <summary>
@@ -39,60 +50,59 @@ public abstract class Presentation : IDisposable
     /// <summary>
     ///     Gets the number of slides in the presentation.
     /// </summary>
-    public int SlideCount => GetSlideIdList().Count();
+    public int SlideCount => GetSlideIdList()?.Count() ?? 0;
 
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
-        _doc.Dispose();
+        Doc.Dispose();
+        Dispose(_disposed);
         GC.SuppressFinalize(this);
     }
+
+    protected virtual void Dispose(bool disposing) {}
 
     /// <summary>
     ///     Gets the presentation part.
     /// </summary>
-    /// <exception cref="InvalidPresentation">Thrown if the presentation part is missing.</exception>
-    protected PresentationPart GetPresentationPart()
+    protected PresentationPart? GetPresentationPart()
     {
-        return _doc.PresentationPart
-               ?? throw new InvalidPresentation(FilePath, "Missing presentation part.");
+        return Doc.PresentationPart;
     }
 
     /// <summary>
     ///     Gets the slide ID list.
     /// </summary>
-    /// <exception cref="InvalidPresentation">Thrown if the slide ID list is missing.</exception>
-    public SlideIdList GetSlideIdList()
+    public SlideIdList? GetSlideIdList()
     {
-        return GetPresentationPart().Presentation.SlideIdList
-               ?? throw new InvalidPresentation(FilePath, "Missing slide ID list.");
+        return GetPresentationPart()?.Presentation.SlideIdList;
     }
 
     /// <summary>
     ///     Gets a slide part by relationship ID.
     /// </summary>
     /// <param name="slideRId">The relationship ID of the slide.</param>
-    public SlidePart GetSlidePart(string slideRId)
+    public SlidePart? GetSlidePart(string slideRId)
     {
-        return (SlidePart)GetPresentationPart().GetPartById(slideRId);
+        return (SlidePart?)GetPresentationPart()?.GetPartById(slideRId);
     }
 
     /// <summary>
     ///     Gets all presentation text elements from a slide.
     /// </summary>
-    public static IEnumerable<Text> GetPresentationTexts(SlidePart slidePart)
+    public static IEnumerable<PresentationText> GetPresentationTexts(SlidePart slidePart)
     {
-        return slidePart.Slide.Descendants<Text>();
+        return slidePart.Slide.Descendants<PresentationText>();
     }
 
 
     /// <summary>
     ///     Gets all drawing text elements from a slide.
     /// </summary>
-    public static IEnumerable<DocumentFormat.OpenXml.Drawing.Text> GetDrawingTexts(SlidePart slidePart)
+    public static IEnumerable<DrawingText> GetDrawingTexts(SlidePart slidePart)
     {
-        List<DocumentFormat.OpenXml.Drawing.Text> texts = [];
+        List<DrawingText> texts = [];
         var shapes = GetShapes(slidePart);
         foreach (var shape in shapes)
         {

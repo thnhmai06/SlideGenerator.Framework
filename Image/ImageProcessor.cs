@@ -120,7 +120,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
         using var saliencyMap = new Mat();
 
         var ok = saliency.Compute(image.Mat, saliencyMap);
-        if (!ok) throw new ComputeSaliencyFailed(image.FilePath);
+        if (!ok) throw new ComputeSaliencyFailed(image.SourceName);
 
         using var outMap = new Mat();
         saliencyMap.ConvertTo(outMap, DepthType.Cv32F);

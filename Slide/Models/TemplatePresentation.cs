@@ -12,8 +12,8 @@ namespace SlideGenerator.Framework.Slide.Models;
 /// </summary>
 public sealed class TemplatePresentation : Presentation
 {
-    private readonly ISlide _spireMainSlide;
     private readonly Spire.Presentation.Presentation _spirePresentation = new();
+    private readonly ISlide _spireMainSlide;
 
     /// <summary>
     ///     Opens a template presentation.
@@ -25,11 +25,11 @@ public sealed class TemplatePresentation : Presentation
         MainSlideIndex = slideIndex;
         slideIndex--; // Convert to zero-based index
 
-        var slideIds = GetSlideIdList().ChildElements;
-        var slideId = (SlideId)slideIds[slideIndex];
-        MainSlideRelationshipId = slideId.RelationshipId?.Value
-                                  ?? throw new InvalidPresentation(filePath,
-                                      $"No relationship ID for slide {slideIndex + 1}.");
+        var slideIds = GetSlideIdList()?.ChildElements;
+        var slideId = (SlideId?)slideIds?[slideIndex];
+        MainSlideRelationshipId = slideId?.RelationshipId?.Value
+                                  ?? throw new InvalidPresentation(
+                                      filePath, $"Slide index {MainSlideIndex} does not exist.");
 
         _spirePresentation.LoadFromFile(filePath);
         _spireMainSlide = _spirePresentation.Slides[slideIndex];
@@ -48,9 +48,21 @@ public sealed class TemplatePresentation : Presentation
     /// <summary>
     ///     Gets the main slide part.
     /// </summary>
-    public SlidePart GetSlidePart()
+    public SlidePart? GetSlidePart()
     {
         return GetSlidePart(MainSlideRelationshipId);
+    }
+
+    /// <summary>
+    ///     Saves the template presentation as a working presentation.
+    /// </summary>
+    /// <param name="destPath">Destination path for the new working presentation.</param>
+    /// <returns>A new instance of WorkingPresentation.</returns>
+    public WorkingPresentation SaveAs(string destPath)
+    {
+        var newDoc = Doc.Clone(destPath, true);
+        newDoc.PresentationPart!.Presentation.Save();
+        return new WorkingPresentation(newDoc, destPath);
     }
 
     /// <summary>
@@ -73,5 +85,11 @@ public sealed class TemplatePresentation : Presentation
         }
 
         return shapes;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!disposing) return;
+        _spirePresentation.Dispose();
     }
 }

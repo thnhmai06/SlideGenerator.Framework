@@ -17,11 +17,11 @@ public static class ImageReplacer
     /// </summary>
     /// <param name="slidePart">The slide part containing the picture.</param>
     /// <param name="picture">The picture element to update.</param>
-    /// <param name="imageStream">Stream containing the new image data (PNG format).</param>
-    public static void ReplaceImage(SlidePart slidePart, Picture picture, Stream imageStream)
+    /// <param name="pngStream">Stream containing the new image data (PNG format).</param>
+    public static void ReplaceImage(SlidePart slidePart, Picture picture, Stream pngStream)
     {
         var imgPart = slidePart.AddImagePart(ImagePartType.Png);
-        imgPart.FeedData(imageStream);
+        imgPart.FeedData(pngStream);
         var rId = slidePart.GetIdOfPart(imgPart);
 
         var blip = picture.Descendants<Blip>().FirstOrDefault();
@@ -41,11 +41,11 @@ public static class ImageReplacer
     /// </summary>
     /// <param name="slidePart">The slide part containing the shape.</param>
     /// <param name="shape">The shape element to update.</param>
-    /// <param name="imageStream">Stream containing the new image data (PNG format).</param>
-    public static void ReplaceImage(SlidePart slidePart, Shape shape, Stream imageStream)
+    /// <param name="pngStream">Stream containing the new image data (PNG format).</param>
+    public static void ReplaceImage(SlidePart slidePart, Shape shape, Stream pngStream)
     {
         var imgPart = slidePart.AddImagePart(ImagePartType.Png);
-        imgPart.FeedData(imageStream);
+        imgPart.FeedData(pngStream);
         var rId = slidePart.GetIdOfPart(imgPart);
 
         var blipFill = shape.ShapeProperties?.GetFirstChild<BlipFill>();
@@ -74,12 +74,8 @@ public static class ImageReplacer
     public static Size GetShapeSize(Shape shape)
     {
         var transform = shape.ShapeProperties?.Transform2D;
-        if (transform?.Extents == null)
-            return new Size(400, 300);
-
-        // EMUs to pixels (9525 EMUs per pixel at 96 DPI)
-        var width = (int)((transform.Extents.Cx?.Value ?? 3810000) / 9525);
-        var height = (int)((transform.Extents.Cy?.Value ?? 2857500) / 9525);
+        var width = (int)((transform?.Extents?.Cx?.Value ?? 0) / 9525);
+        var height = (int)((transform?.Extents?.Cy?.Value ?? 0) / 9525);
         return new Size(Math.Max(1, width), Math.Max(1, height));
     }
 
@@ -91,24 +87,20 @@ public static class ImageReplacer
     public static Size GetPictureSize(Picture picture)
     {
         var transform = picture.ShapeProperties?.Transform2D;
-        if (transform?.Extents == null)
-            return new Size(400, 300);
-
-        // EMUs to pixels (9525 EMUs per pixel at 96 DPI)
-        var width = (int)((transform.Extents.Cx?.Value ?? 3810000) / 9525);
-        var height = (int)((transform.Extents.Cy?.Value ?? 2857500) / 9525);
+        var width = (int)((transform?.Extents?.Cx?.Value ?? 0) / 9525);
+        var height = (int)((transform?.Extents?.Cy?.Value ?? 0) / 9525);
         return new Size(Math.Max(1, width), Math.Max(1, height));
-    }
-
-    private static string GetPictureId(Picture picture)
-    {
-        var nvPicPr = picture.NonVisualPictureProperties;
-        return nvPicPr?.NonVisualDrawingProperties?.Id?.Value.ToString() ?? "Unknown";
     }
 
     private static string GetShapeId(Shape shape)
     {
         var nvShapePr = shape.NonVisualShapeProperties;
         return nvShapePr?.NonVisualDrawingProperties?.Id?.Value.ToString() ?? "Unknown";
+    }
+
+    private static string GetPictureId(Picture picture)
+    {
+        var nvPicPr = picture.NonVisualPictureProperties;
+        return nvPicPr?.NonVisualDrawingProperties?.Id?.Value.ToString() ?? "Unknown";
     }
 }

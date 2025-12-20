@@ -23,10 +23,7 @@ public sealed class ImageData : IDisposable, ICloneable
     /// <exception cref="ReadImageFailed">Thrown when the image cannot be read.</exception>
     public ImageData(string filePath)
     {
-        FilePath = filePath;
-        if (!File.Exists(FilePath))
-            throw new FileNotFoundException("Image file not found.", filePath);
-
+        SourceName = filePath;
         try
         {
             using var magickImage = new MagickImage(filePath);
@@ -58,7 +55,7 @@ public sealed class ImageData : IDisposable, ICloneable
     /// <exception cref="ReadImageFailed">Thrown when the image cannot be read.</exception>
     public ImageData(byte[] bytes, string sourceName = "memory")
     {
-        FilePath = sourceName;
+        SourceName = sourceName;
 
         try
         {
@@ -86,7 +83,7 @@ public sealed class ImageData : IDisposable, ICloneable
     /// <summary>
     ///     Gets the file path of the source image. If loaded from memory, this is a descriptive name.
     /// </summary>
-    public string FilePath { get; }
+    public string SourceName { get; }
 
     /// <summary>
     ///     Gets or sets the underlying OpenCV Mat object.
@@ -100,7 +97,7 @@ public sealed class ImageData : IDisposable, ICloneable
 
     public object Clone()
     {
-        return new ImageData(ToByteArray(), FilePath);
+        return new ImageData(ToByteArray(), SourceName);
     }
 
     public void Dispose()
@@ -129,7 +126,7 @@ public sealed class ImageData : IDisposable, ICloneable
     public ImageData Crop(Rectangle roi)
     {
         var croppedMat = new Mat(Mat, roi);
-        var result = new ImageData(ToByteArray(), FilePath)
+        var result = new ImageData(ToByteArray(), SourceName)
         {
             Mat = croppedMat.Clone()
         };
@@ -141,7 +138,7 @@ public sealed class ImageData : IDisposable, ICloneable
     ///     Crops this image in place.
     /// </summary>
     /// <param name="roi">The region of interest to crop.</param>
-    public void CropInPlace(Rectangle roi)
+    internal void CropInPlace(Rectangle roi)
     {
         var croppedMat = new Mat(Mat, roi);
         var cloned = croppedMat.Clone();
@@ -164,7 +161,7 @@ public sealed class ImageData : IDisposable, ICloneable
     {
         var res = new Mat();
         CvInvoke.Resize(Mat, res, size, 0, 0, Inter.Area);
-        var result = new ImageData(ToByteArray(), FilePath)
+        var result = new ImageData(ToByteArray(), SourceName)
         {
             Mat = res
         };
@@ -179,7 +176,7 @@ public sealed class ImageData : IDisposable, ICloneable
     ///     calling this method, any references to the previous image data become invalid.
     /// </remarks>
     /// <param name="size">The new size</param>
-    public void ResizeInPlace(Size size)
+    internal void ResizeInPlace(Size size)
     {
         var resizedMat = new Mat();
         CvInvoke.Resize(Mat, resizedMat, size, 0, 0, Inter.Area);
