@@ -1,7 +1,9 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 using SlideGenerator.Framework.Slide.Exceptions;
+using Path = System.IO.Path;
 using Picture = DocumentFormat.OpenXml.Drawing.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 using Text = DocumentFormat.OpenXml.Presentation.Text;
@@ -24,7 +26,9 @@ public abstract class Presentation : IDisposable
     protected Presentation(string filePath, bool isEditable)
     {
         FilePath = filePath;
-        _doc = PresentationDocument.Open(filePath, isEditable);
+        _doc = !Path.Exists(filePath)
+            ? PresentationDocument.Create(filePath, PresentationDocumentType.Presentation)
+            : PresentationDocument.Open(filePath, isEditable);
     }
 
     /// <summary>
@@ -50,29 +54,37 @@ public abstract class Presentation : IDisposable
     /// </summary>
     /// <exception cref="InvalidPresentation">Thrown if the presentation part is missing.</exception>
     protected PresentationPart GetPresentationPart()
-        => _doc.PresentationPart
+    {
+        return _doc.PresentationPart
                ?? throw new InvalidPresentation(FilePath, "Missing presentation part.");
+    }
 
     /// <summary>
     ///     Gets the slide ID list.
     /// </summary>
     /// <exception cref="InvalidPresentation">Thrown if the slide ID list is missing.</exception>
     public SlideIdList GetSlideIdList()
-        => GetPresentationPart().Presentation.SlideIdList
+    {
+        return GetPresentationPart().Presentation.SlideIdList
                ?? throw new InvalidPresentation(FilePath, "Missing slide ID list.");
+    }
 
     /// <summary>
     ///     Gets a slide part by relationship ID.
     /// </summary>
     /// <param name="slideRId">The relationship ID of the slide.</param>
     public SlidePart GetSlidePart(string slideRId)
-        => (SlidePart)GetPresentationPart().GetPartById(slideRId);
+    {
+        return (SlidePart)GetPresentationPart().GetPartById(slideRId);
+    }
 
     /// <summary>
     ///     Gets all presentation text elements from a slide.
     /// </summary>
     public static IEnumerable<Text> GetPresentationTexts(SlidePart slidePart)
-        => slidePart.Slide.Descendants<Text>();
+    {
+        return slidePart.Slide.Descendants<Text>();
+    }
 
 
     /// <summary>
@@ -87,9 +99,9 @@ public abstract class Presentation : IDisposable
             if (shape.TextBody is null) continue;
 
             foreach (var paragraph in shape.TextBody.Descendants<Paragraph>())
-                foreach (var run in paragraph.Descendants<Run>())
-                    if (run.Text is not null)
-                        texts.Add(run.Text);
+            foreach (var run in paragraph.Descendants<Run>())
+                if (run.Text is not null)
+                    texts.Add(run.Text);
         }
 
         return texts;
@@ -100,25 +112,33 @@ public abstract class Presentation : IDisposable
     /// </summary>
     /// <param name="slidePart">The slide part.</param>
     public static IEnumerable<Shape> GetShapes(SlidePart slidePart)
-        => slidePart.Slide.Descendants<Shape>();
+    {
+        return slidePart.Slide.Descendants<Shape>();
+    }
 
     /// <summary>
     ///     Gets a shape by its ID.
     /// </summary>
     public static Shape? GetShapeById(SlidePart slidePart, uint shapeId)
-        => GetShapes(slidePart).FirstOrDefault(shape
+    {
+        return GetShapes(slidePart).FirstOrDefault(shape
             => shape.NonVisualShapeProperties?.NonVisualDrawingProperties?.Id?.Value == shapeId);
+    }
 
     /// <summary>
     ///     Gets all pictures from a slide.
     /// </summary>
     public static IEnumerable<Picture> GetPictures(SlidePart slidePart)
-        => slidePart.Slide.Descendants<Picture>();
+    {
+        return slidePart.Slide.Descendants<Picture>();
+    }
 
     /// <summary>
     ///     Gets a picture by its ID.
     /// </summary>
     public static Picture? GetPictureById(SlidePart slidePart, uint shapeId)
-        => GetPictures(slidePart).FirstOrDefault(pic
+    {
+        return GetPictures(slidePart).FirstOrDefault(pic
             => pic.NonVisualPictureProperties?.NonVisualDrawingProperties?.Id?.Value == shapeId);
+    }
 }

@@ -12,7 +12,6 @@ namespace SlideGenerator.Framework.Slide.Models;
 /// </summary>
 public sealed class TemplatePresentation : Presentation
 {
-    private const int FirstSlideIndex = 0;
     private readonly ISlide _spireMainSlide;
     private readonly Spire.Presentation.Presentation _spirePresentation = new();
 
@@ -20,21 +19,26 @@ public sealed class TemplatePresentation : Presentation
     ///     Opens a template presentation.
     /// </summary>
     /// <param name="filePath">Path to the presentation file.</param>
-    /// <exception cref="TemplateNotOneSlide">Thrown when the presentation does not have exactly one slide.</exception>
-    public TemplatePresentation(string filePath) : base(filePath, true)
+    /// <param name="slideIndex">Slide index to use as template (1-based).</param>
+    public TemplatePresentation(string filePath, int slideIndex = 1) : base(filePath, true)
     {
-        var slideIds = GetSlideIdList().ChildElements;
-        if (slideIds.Count != 1)
-            throw new TemplateNotOneSlide(filePath, slideIds.Count);
+        MainSlideIndex = slideIndex;
+        slideIndex--; // Convert to zero-based index
 
-        var slideId = (SlideId)slideIds[FirstSlideIndex];
+        var slideIds = GetSlideIdList().ChildElements;
+        var slideId = (SlideId)slideIds[slideIndex];
         MainSlideRelationshipId = slideId.RelationshipId?.Value
                                   ?? throw new InvalidPresentation(filePath,
-                                      $"No relationship ID for slide {FirstSlideIndex + 1}.");
+                                      $"No relationship ID for slide {slideIndex + 1}.");
 
         _spirePresentation.LoadFromFile(filePath);
-        _spireMainSlide = _spirePresentation.Slides[FirstSlideIndex];
+        _spireMainSlide = _spirePresentation.Slides[slideIndex];
     }
+
+    /// <summary>
+    ///     The Index of the main slide used as a template (1-based).
+    /// </summary>
+    public int MainSlideIndex { get; }
 
     /// <summary>
     ///     Gets the relationship ID of the main slide.
@@ -44,7 +48,7 @@ public sealed class TemplatePresentation : Presentation
     /// <summary>
     ///     Gets the main slide part.
     /// </summary>
-    public SlidePart GetMainSlidePart()
+    public SlidePart GetSlidePart()
     {
         return GetSlidePart(MainSlideRelationshipId);
     }

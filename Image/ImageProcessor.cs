@@ -18,15 +18,8 @@ namespace SlideGenerator.Framework.Image;
 /// <param name="roiOptions">The ROI options to use for processing.</param>
 public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
 {
-    /// <summary>
-    ///     Represents a candidate region of interest (ROI) with an associated confidence score.
-    /// </summary>
-    /// <param name="Rect">The rectangular area defining the region of interest.</param>
-    /// <param name="Score">
-    ///     The confidence score indicating the likelihood that the region is a valid ROI. Higher values represent greater
-    ///     confidence.
-    /// </param>
-    private readonly record struct RoiCandidate(Rectangle Rect, float Score);
+    // FaceDetectorYNModel.Detect is typically NOT thread-safe => serialize usage.
+    private readonly SemaphoreSlim _faceDetectGate = new(1, 1);
 
     // Lazy init + async init of model. This only guarantees single initialization.
     private readonly Lazy<Task<FaceDetectorYNModel>> _faceModel =
@@ -36,9 +29,6 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
             await model.Init().ConfigureAwait(false);
             return model;
         }, LazyThreadSafetyMode.ExecutionAndPublication);
-
-    // FaceDetectorYNModel.Detect is typically NOT thread-safe => serialize usage.
-    private readonly SemaphoreSlim _faceDetectGate = new(1, 1);
 
     /// <summary>
     ///     Options controlling ROI padding and face behavior.
@@ -104,14 +94,20 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// </summary>
     /// <param name="image">The image to crop (modified in place).</param>
     /// <param name="rect">The region of interest to crop to.</param>
-    public static void Crop(ImageData image, Rectangle rect) => image.CropInPlace(rect);
+    public static void Crop(ImageData image, Rectangle rect)
+    {
+        image.CropInPlace(rect);
+    }
 
     /// <summary>
     ///     Resizes the specified image to the given dimensions in place.
     /// </summary>
     /// <param name="image">The image to resize (modified in place).</param>
     /// <param name="size">The size to resize to.</param>
-    public static void Resize(ImageData image, Size size) => image.ResizeInPlace(size);
+    public static void Resize(ImageData image, Size size)
+    {
+        image.ResizeInPlace(size);
+    }
 
     /// <summary>
     ///     Computes a normalized saliency map for the specified image using the spectral residual method.
@@ -177,19 +173,19 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
         switch (cropType)
         {
             case CropType.Crop:
-                {
-                    var roi = await roiSelector(image, targetSize).ConfigureAwait(false);
-                    image.CropInPlace(roi);
-                    break;
-                }
+            {
+                var roi = await roiSelector(image, targetSize).ConfigureAwait(false);
+                image.CropInPlace(roi);
+                break;
+            }
             case CropType.Fit:
-                {
-                    var maxSize = GetMaxAspectSize(image.Size, targetSize);
-                    var roi = await roiSelector(image, maxSize).ConfigureAwait(false);
-                    image.CropInPlace(roi);
-                    Resize(image, targetSize);
-                    break;
-                }
+            {
+                var maxSize = GetMaxAspectSize(image.Size, targetSize);
+                var roi = await roiSelector(image, maxSize).ConfigureAwait(false);
+                image.CropInPlace(roi);
+                Resize(image, targetSize);
+                break;
+            }
             default:
                 throw new ArgumentOutOfRangeException(nameof(cropType), cropType, null);
         }
@@ -221,7 +217,9 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// <param name="size">The desired crop size.</param>
     /// <returns>A centered rectangle of the requested size (clamped to image bounds).</returns>
     private static ValueTask<Rectangle> GetCenterRoiAsync(ImageData image, Size size)
-        => ValueTask.FromResult(GetCenterRoi(image, size));
+    {
+        return ValueTask.FromResult(GetCenterRoi(image, size));
+    }
 
     /// <summary>
     ///     Finds a prominent ROI asynchronously using saliency and returns a crop rectangle within image bounds.
@@ -230,7 +228,9 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// <param name="size">The target size that defines the base crop dimensions.</param>
     /// <returns>A Rectangle representing the most prominent region of interest within the image.</returns>
     private ValueTask<Rectangle> GetProminentRoiAsync(ImageData image, Size size)
-        => ValueTask.FromResult(GetProminentRoi(image, size));
+    {
+        return ValueTask.FromResult(GetProminentRoi(image, size));
+    }
 
     /// <summary>
     ///     Calculates the center crop coordinates.
@@ -371,7 +371,8 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     /// </remarks>
     /// <param name="image">The image data in which to search for faces. Must not be null.</param>
     /// <param name="minScore">
-    ///     The minimum confidence score required for a detected face to be included in the results. Must be between 0.0 and 1.0.
+    ///     The minimum confidence score required for a detected face to be included in the results. Must be between 0.0 and
+    ///     1.0.
     /// </param>
     /// <returns>
     ///     A task that represents the asynchronous operation. The task result is a list of detected
@@ -391,8 +392,14 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
             // Detect Faces
             using var raw = new Mat();
             await _faceDetectGate.WaitAsync().ConfigureAwait(false);
-            try { model.Detect(image.Mat, raw); }
-            finally { _faceDetectGate.Release(); }
+            try
+            {
+                model.Detect(image.Mat, raw);
+            }
+            finally
+            {
+                _faceDetectGate.Release();
+            }
 
             if (raw.IsEmpty || raw.Rows <= 0 || raw.Cols < 5)
                 return faces;
@@ -493,4 +500,14 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
 
         return new Rectangle(x, y, crop.Width, crop.Height);
     }
+
+    /// <summary>
+    ///     Represents a candidate region of interest (ROI) with an associated confidence score.
+    /// </summary>
+    /// <param name="Rect">The rectangular area defining the region of interest.</param>
+    /// <param name="Score">
+    ///     The confidence score indicating the likelihood that the region is a valid ROI. Higher values represent greater
+    ///     confidence.
+    /// </param>
+    private readonly record struct RoiCandidate(Rectangle Rect, float Score);
 }

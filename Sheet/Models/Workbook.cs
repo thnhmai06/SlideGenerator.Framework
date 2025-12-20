@@ -47,8 +47,10 @@ public sealed class Workbook : IWorkbook
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, int> GetWorksheetsInfo()
-        => _worksheets.ToDictionary(t => t.Key, t => t.Value.RowCount);
-    
+    {
+        return _worksheets.ToDictionary(t => t.Key, t => t.Value.RowCount);
+    }
+
     public void Dispose()
     {
         if (_disposed) return;
@@ -62,5 +64,7 @@ public sealed class Workbook : IWorkbook
     /// <param name="name">The name of the worksheet.</param>
     /// <returns>The worksheet.</returns>
     public IWorksheet? GetWorksheet(string name)
-        => _worksheets.GetValueOrDefault(name);
+    {
+        return _worksheets.GetValueOrDefault(name);
+    }
 }

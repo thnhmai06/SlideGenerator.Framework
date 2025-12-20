@@ -4,27 +4,16 @@ using DocumentFormat.OpenXml.Presentation;
 namespace SlideGenerator.Framework.Slide.Models;
 
 /// <summary>
-///     Represents a presentation derived from a template, allowing slide generation.
+///     Represents a presentation working from a template, allowing slide generation.
 /// </summary>
-public sealed class DerivedPresentation : Presentation
+public sealed class WorkingPresentation : Presentation
 {
     /// <summary>
-    ///     Creates a derived presentation by copying a source presentation.
+    ///     Creates a working presentation.
     /// </summary>
-    /// <param name="destPath">Destination path for the new presentation.</param>
-    /// <param name="srcPath">Source template presentation path.</param>
-    public DerivedPresentation(string destPath, string srcPath)
-        : base(CopyAndReturnPath(srcPath, destPath), true)
-    {
-    }
-
-    /// <summary>
-    ///     Creates a derived presentation from a template.
-    /// </summary>
-    /// <param name="destPath">Destination path for the new presentation.</param>
-    /// <param name="template">The template presentation to copy from.</param>
-    public DerivedPresentation(string destPath, TemplatePresentation template)
-        : this(destPath, template.FilePath)
+    /// <param name="filePath">Destination path for the new presentation.</param>
+    public WorkingPresentation(string filePath)
+        : base(filePath, true)
     {
     }
 
@@ -32,15 +21,17 @@ public sealed class DerivedPresentation : Presentation
     ///     Saves the presentation.
     /// </summary>
     public void Save()
-        => GetPresentationPart().Presentation.Save();
+    {
+        GetPresentationPart().Presentation.Save();
+    }
 
     /// <summary>
     ///     Copies a slide and inserts it at the specified position.
     /// </summary>
     /// <param name="slideRid">Relationship ID of the slide to copy.</param>
     /// <param name="position">
-    /// Position that new slide will have (1-based).
-    /// If below than 0 or greater than current total slides, appends to end.
+    ///     Position that new slide will have (1-based).
+    ///     If below than 0 or greater than current total slides, appends to end.
     /// </param>
     /// <returns>The slide part of the copied slide.</returns>
     public SlidePart CopySlide(string slideRid, int position = -1)
@@ -94,15 +85,5 @@ public sealed class DerivedPresentation : Presentation
         var slideIdList = GetSlideIdList();
         var slide = slideIdList.ChildElements.Cast<SlideId>().ElementAt(position - 1);
         slide?.Remove();
-    }
-
-    private static string CopyAndReturnPath(string srcPath, string destPath)
-    {
-        var directory = Path.GetDirectoryName(destPath);
-        if (!string.IsNullOrEmpty(directory))
-            Directory.CreateDirectory(directory);
-
-        File.Copy(srcPath, destPath, true);
-        return destPath;
     }
 }

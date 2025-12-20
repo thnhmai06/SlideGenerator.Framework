@@ -23,7 +23,9 @@ public static partial class CloudUrlResolver
     /// <exception cref="CannotExtractUrlException">Thrown when the URL cannot be resolved.</exception>
     /// <exception cref="UriFormatException">Thrown when the URL is not a valid URI.</exception>
     public static async Task<Uri> ResolveLinkAsync(string url, HttpClient? httpClient = null)
-        => await ResolveLinkAsync(new Uri(url), httpClient);
+    {
+        return await ResolveLinkAsync(new Uri(url), httpClient);
+    }
 
     /// <summary>
     ///     Resolves a cloud storage URI to a direct download link.
@@ -58,7 +60,7 @@ public static partial class CloudUrlResolver
     ///     Checks if the URI is from a supported cloud service.
     /// </summary>
     /// <param name="uri">The URI to check.</param>
-    /// <returns><see langword="true"/> if the URI is from a supported cloud service, otherwise <see langword="false"/>.</returns>
+    /// <returns><see langword="true" /> if the URI is from a supported cloud service, otherwise <see langword="false" />.</returns>
     public static bool IsCloudUrlSupported(Uri uri)
     {
         return uri.Host.EndsWith("drive.google.com", StringComparison.OrdinalIgnoreCase)

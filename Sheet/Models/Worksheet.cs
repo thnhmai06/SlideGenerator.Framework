@@ -1,6 +1,5 @@
 using ClosedXML.Excel;
 using SlideGenerator.Framework.Sheet.Contracts;
-
 using RowContent = System.Collections.Generic.Dictionary<string, string?>;
 
 namespace SlideGenerator.Framework.Sheet.Models;
