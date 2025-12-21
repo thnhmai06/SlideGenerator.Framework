@@ -102,3 +102,7 @@ Notes:
 - Do not reimplement framework functionality in the backend.
 - Do not add third-party libraries to replace framework behavior.
 - Treat the framework as the source of truth for workbook, slide, image, and cloud operations.
+
+## Contributors:
+- Main Developer: [@thnhmai06](https://github.com/thnhmai06)
+- Cloud Logic: [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)
