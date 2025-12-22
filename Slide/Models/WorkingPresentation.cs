@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 
@@ -175,7 +175,8 @@ public sealed class WorkingPresentation : Presentation
                 if (a.LocalName is not ("id" or "embed" or "link")) continue;
                 if (string.IsNullOrEmpty(a.Value)) continue;
 
-                if (ridMap.TryGetValue(a.Value, out var newRid) && !string.Equals(a.Value, newRid, StringComparison.Ordinal))
+                if (ridMap.TryGetValue(a.Value, out var newRid) &&
+                    !string.Equals(a.Value, newRid, StringComparison.Ordinal))
                 {
                     attrs[i] = new OpenXmlAttribute(a.Prefix, a.LocalName, a.NamespaceUri, newRid);
                     changed = true;
@@ -202,7 +203,6 @@ public sealed class WorkingPresentation : Presentation
         foreach (var el in toRemove)
             el.Remove();
     }
-
 
 
     /// <summary>
