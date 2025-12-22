@@ -35,13 +35,19 @@ You can configure your `.csproj` to automatically include the correct runtime ba
 
 ```xml
 <ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64'">
-    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
+	<PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
 </ItemGroup>
 <ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-x64'">
-    <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.12.0.5764" />
+	<PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.12.0.5764" />
+</ItemGroup>
+<ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-arm'">
+	<PackageReference Include="Emgu.CV.runtime.debian-arm" Version="4.12.0.5764" />
+</ItemGroup>
+<ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-arm64'">
+	<PackageReference Include="Emgu.CV.runtime.debian-arm64" Version="4.12.0.5764" />
 </ItemGroup>
 <ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-x64' Or '$(RuntimeIdentifier)'=='osx-arm64'">
-    <PackageReference Include="Emgu.CV.runtime.macos" Version="4.12.0.5764" />
+	<PackageReference Include="Emgu.CV.runtime.macos" Version="4.12.0.5764" />
 </ItemGroup>
 ```
 
