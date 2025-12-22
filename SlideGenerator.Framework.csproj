@@ -42,7 +42,7 @@
 		<PackageReference Include="Stubble.Core" Version="1.10.8" />
 		<PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
 		<PackageReference Include="ClosedXML" Version="0.104.2" />
-		<PackageReference Include="Spire.Presentation" Version="10.1.0" />
+		<PackageReference Include="Spire.Presentation" Version="10.1.1" />
 		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />
 	</ItemGroup>
 

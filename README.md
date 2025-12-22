@@ -28,7 +28,7 @@ This framework relies on **EmguCV** for advanced image processing (ROI detection
 - **Windows (x64):** `Emgu.CV.runtime.windows`
 - **Linux (x64):** `Emgu.CV.runtime.ubuntu-x64` (or other corresponding Linux runtimes)
 
-**Note:** macOS is currently **not supported** because the Emgu.CV runtime does not support it directly out of the box in this context. For more details on installing Emgu.CV runtimes, please visit: [Emgu.CV Download And Installation](https://www.emgu.com/wiki/index.php/Download_And_Installation).
+> For more details, see [Emgu.CV Installation](https://www.emgu.com/wiki/index.php/Download_And_Installation).
 
 Ensure the runtime version matches the `Emgu.CV` version used in the framework (currently `4.12.0.5764`). Without the proper runtime, image processing features will fail with `DllNotFoundException` or `TypeInitializationException`.
 
@@ -48,6 +48,8 @@ You can configure your `.csproj` to automatically include the correct runtime ba
 	<PackageReference Include="Emgu.CV.runtime.debian-arm64" Version="4.12.0.5764" />
 </ItemGroup>
 ```
+
+**Note:** macOS is **not supported** in these script because the Emgu.CV runtime does not support it directly out of the box in this context. For more details, see [Emgu.CV MacOS installation](https://www.emgu.com/wiki/index.php/Download_And_Installation#Mac_OS).
 
 ## Cloud
 
