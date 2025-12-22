@@ -2,8 +2,8 @@ using System.Drawing;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using SlideGenerator.Framework.Slide.Exceptions;
+using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
-using Picture = DocumentFormat.OpenXml.Drawing.Picture;
 
 namespace SlideGenerator.Framework.Slide;
 

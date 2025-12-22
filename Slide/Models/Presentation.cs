@@ -2,11 +2,11 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using Path = System.IO.Path;
-using Picture = DocumentFormat.OpenXml.Drawing.Picture;
-using Shape = DocumentFormat.OpenXml.Presentation.Shape;
-using PresentationText = DocumentFormat.OpenXml.Presentation.Text;
 using DrawingText = DocumentFormat.OpenXml.Drawing.Text;
+using Path = System.IO.Path;
+using Picture = DocumentFormat.OpenXml.Presentation.Picture;
+using PresentationText = DocumentFormat.OpenXml.Presentation.Text;
+using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 
 namespace SlideGenerator.Framework.Slide.Models;
 
