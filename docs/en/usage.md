@@ -51,4 +51,3 @@ var processor = new ImageProcessor(new RoiOptions());
 var selector = processor.GetRoiSelector(RoiType.Center);
 await ImageProcessor.CropToRoiAsync(imageData, targetSize, selector, CropType.Crop);
 ```
-

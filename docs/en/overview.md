@@ -38,4 +38,3 @@ The backend orchestrates jobs and I/O; the framework performs the processing.
 
 - `Workbook` and presentation models are `IDisposable`.
 - Dispose objects when finished to avoid file locks.
-
