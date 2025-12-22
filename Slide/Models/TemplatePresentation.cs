@@ -14,44 +14,30 @@ public sealed class TemplatePresentation : Presentation
 {
     private readonly Spire.Presentation.Presentation _spirePresentation = new();
     private readonly ISlide _spireMainSlide;
-    private readonly string? _tempCopyPath;
 
     /// <summary>
     ///     Opens a template presentation.
     /// </summary>
     /// <param name="filePath">Path to the presentation file.</param>
-    /// <param name="slideIndex">Slide index to use as template (1-based).</param>
-    public TemplatePresentation(string filePath, int slideIndex = 1) : base(filePath, false)
+    public TemplatePresentation(string filePath) : base(filePath, false)
     {
-        MainSlideIndex = slideIndex;
-        slideIndex--; // Convert to zero-based index
+        if (SlideCount != 1)
+            throw new NotOnlyOneSlidePresentation(filePath);
+
+        var slideIndex = 0; // First slide, convert to zero-based index
 
         var slideIds = GetSlideIdList()?.ChildElements;
         var slideId = (SlideId?)slideIds?[slideIndex];
         MainSlideRelationshipId = slideId?.RelationshipId?.Value
                                   ?? throw new InvalidPresentation(
-                                      filePath, $"Slide index {MainSlideIndex} does not exist.");
+                                      filePath, $"Slide index {slideIndex + 1} does not exist.");
 
-        try
-        {
-            _spirePresentation.LoadFromFile(filePath);
-        }
-        catch (IOException)
-        {
-            var tempCopyPath = TryCreateTempCopy(filePath);
-            if (string.IsNullOrWhiteSpace(tempCopyPath))
-                throw;
-
-            _spirePresentation.LoadFromFile(tempCopyPath);
-            _tempCopyPath = tempCopyPath;
-        }
+        // Spire
+        using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        _spirePresentation = new Spire.Presentation.Presentation();
+        _spirePresentation.LoadFromStream(fs, FileFormat.Auto);
         _spireMainSlide = _spirePresentation.Slides[slideIndex];
     }
-
-    /// <summary>
-    ///     The Index of the main slide used as a template (1-based).
-    /// </summary>
-    public int MainSlideIndex { get; }
 
     /// <summary>
     ///     Gets the relationship ID of the main slide.
@@ -104,37 +90,5 @@ public sealed class TemplatePresentation : Presentation
     {
         if (!disposing) return;
         _spirePresentation.Dispose();
-        TryDeleteTempCopy(_tempCopyPath);
-    }
-
-    private static string? TryCreateTempCopy(string filePath)
-    {
-        try
-        {
-            var extension = Path.GetExtension(filePath);
-            var tempPath = Path.Combine(Path.GetTempPath(), $"sg-template-{Guid.NewGuid():N}{extension}");
-            File.Copy(filePath, tempPath, true);
-            return tempPath;
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
-    private static void TryDeleteTempCopy(string? filePath)
-    {
-        if (string.IsNullOrWhiteSpace(filePath)) return;
-        try
-        {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-        }
-        catch
-        {
-            // Best-effort cleanup.
-        }
     }
 }

@@ -71,7 +71,8 @@ await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
 
 Notes:
 
-- Template presentation is expected to contain one slide used as the template.
+- Template presentations must contain exactly one slide; the template index is fixed at 1.
+- When the template has more than one slide, `NotOnlyOneSlidePresentation` is thrown.
 - Use `GetAllPreviewImageShapes()` to discover image shape ids and previews.
 - Use `ImageReplacer.ReplaceImage(...)` for image placeholders.
 
