@@ -8,12 +8,11 @@ permissions:
   contents: write
 
 jobs:
-  pack:
-    runs-on: windows-latest
+  pack-and-publish:
+    name: Pack & Publish
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -23,44 +22,17 @@ jobs:
       - name: Restore
         run: dotnet restore SlideGenerator.Framework.csproj
 
+      # Pack NuGet
       - name: Pack
         run: dotnet pack SlideGenerator.Framework.csproj -c Release -o artifacts/nuget
 
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/nuget/*.nupkg
-
-  publish-binaries:
-    name: Publish (${{ matrix.rid }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            rid: win-x64
-          - os: ubuntu-latest
-            rid: linux-x64
-          - os: macos-latest
-            rid: osx-x64
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.0.x"
-
-      - name: Restore
-        run: dotnet restore SlideGenerator.Framework.csproj
-
+      # Publish DLL (AnyCPU)
       - name: Publish
-        run: dotnet publish SlideGenerator.Framework.csproj -c Release -r ${{ matrix.rid }} --self-contained false -o artifacts/${{ matrix.rid }}
+        run: dotnet publish SlideGenerator.Framework.csproj -c Release -o artifacts/bin
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/${{ matrix.rid }}/*
+          files: |
+            artifacts/nuget/*.nupkg
+            artifacts/bin/SlideGenerator.Framework.dll

@@ -76,9 +76,9 @@ public sealed class TemplatePresentation : Presentation
             if (shape.IsHidden) continue;
             if (shape is SlidePicture || shape.Fill.FillType == FillFormatType.Picture)
             {
-                using var imageStream = shape.SaveAsImage();
+                using var image = shape.SaveAsImage();
                 using var ms = new MemoryStream();
-                imageStream.CopyTo(ms);
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                 shapes.Add(shape.Id, new ShapeImagePreview(shape.Name, ms.ToArray()));
             }
         }

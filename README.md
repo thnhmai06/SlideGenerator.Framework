@@ -19,6 +19,32 @@ Quick links:
 - Slide: template loading, slide cloning, text replacement, image replacement.
 - Image: ROI detection, cropping, and resizing helpers.
 
+## Prerequisites
+
+### EmguCV Runtime
+
+This framework relies on **EmguCV** for advanced image processing (ROI detection, face detection). You **must** ensure that the appropriate native runtime package for your target architecture is installed in your final application project:
+
+- **Windows (x64):** `Emgu.CV.runtime.windows`
+- **Linux (x64):** `Emgu.CV.runtime.ubuntu-x64` (or other corresponding Linux runtimes)
+- **macOS:** `Emgu.CV.runtime.macos`
+
+Ensure the runtime version matches the `Emgu.CV` version used in the framework (currently `4.12.0.5764`). Without the proper runtime, image processing features will fail with `DllNotFoundException` or `TypeInitializationException`.
+
+You can configure your `.csproj` to automatically include the correct runtime based on the target `RuntimeIdentifier`:
+
+```xml
+<ItemGroup Condition="'$(RuntimeIdentifier)'=='win-x64'">
+    <PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
+</ItemGroup>
+<ItemGroup Condition="'$(RuntimeIdentifier)'=='linux-x64'">
+    <PackageReference Include="Emgu.CV.runtime.ubuntu-x64" Version="4.12.0.5764" />
+</ItemGroup>
+<ItemGroup Condition="'$(RuntimeIdentifier)'=='osx-x64' Or '$(RuntimeIdentifier)'=='osx-arm64'">
+    <PackageReference Include="Emgu.CV.runtime.macos" Version="4.12.0.5764" />
+</ItemGroup>
+```
+
 ## Cloud
 
 Key type:
