@@ -61,7 +61,9 @@ public abstract class Presentation : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing) {}
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 
     /// <summary>
     ///     Gets the presentation part.

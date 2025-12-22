@@ -31,10 +31,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="docs\en\README.md" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="ClosedXML" Version="0.105.0" />
 		<PackageReference Include="Emgu.CV.Models" Version="4.12.0.5764" />
 		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />

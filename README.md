@@ -1,6 +1,16 @@
 # SlideGenerator.Framework
 
-A .NET framework for generating PowerPoint files from Excel data
+A .NET framework for generating PowerPoint files from Excel data.
+
+Docs:
+
+- English: [docs/en](docs/en)
+- Vietnamese: [docs/vi](docs/vi)
+
+Quick links:
+
+- Overview: [docs/en/overview.md](docs/en/overview.md)
+- Usage: [docs/en/usage.md](docs/en/usage.md)
 
 ## Modules
 
@@ -105,5 +115,6 @@ Notes:
 - Treat the framework as the source of truth for workbook, slide, image, and cloud operations.
 
 ## Contributors:
-- Main Developer: [@thnhmai06](https://github.com/thnhmai06)
+
+- **Main Developer: [@thnhmai06](https://github.com/thnhmai06)**
 - Cloud Logic: [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)

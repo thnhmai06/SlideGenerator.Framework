@@ -39,25 +39,13 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     ///     Indicates whether the face model has been successfully initialized and is ready for use.
     ///     This property is non-blocking.
     /// </summary>
-    public bool IsFaceModelAvailable
-    {
-        get
-        {
-            if (!_faceModel.IsValueCreated) return false;
-
-            var task = _faceModel.Value;
-            return task is { IsCompletedSuccessfully: true, Result.Initialized: true };
-        }
-    }
+    public bool IsFaceModelAvailable => _faceModel is
+        { IsValueCreated: true, Value: { IsCompletedSuccessfully: true, Result.Initialized: true } };
 
     public void Dispose()
     {
-        if (!_faceModel.IsValueCreated) return;
-
-        var task = _faceModel.Value;
-        if (task.IsCompletedSuccessfully)
-            task.Result.Dispose();
-
+        if (IsFaceModelAvailable)
+            _faceModel.Value.Result.Dispose();
         _faceDetectGate.Dispose();
     }
 
@@ -265,24 +253,20 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
         var cropW = Math.Min(w, size.Width);
         var cropH = Math.Min(h, size.Height);
 
-        using var medianMap = new Mat();
+        var kSize = Math.Max(cropW, cropH) / 4; // scale down
+        kSize = Math.Clamp(kSize, 3, 255);
+        if (kSize % 2 == 0) kSize++;
 
-        // Kernel size ~ crop window, clamped and forced odd >= 3
-        var kernelSize = Math.Max(cropW, cropH);
-        kernelSize = Math.Min(kernelSize, Math.Min(w, h));
-        if (kernelSize < 3) kernelSize = 3;
-        if (kernelSize % 2 == 0) kernelSize++;
+        using var blurred = new Mat();
+        CvInvoke.GaussianBlur(
+            saliencyMap, blurred,
+            new Size(kSize, kSize), 0
+        );
 
-        // Convert to 8U: MedianBlur needs 8U input
-        using var saliency8U = new Mat();
-        saliencyMap.ConvertTo(saliency8U, DepthType.Cv8U, 255.0);
-
-        CvInvoke.MedianBlur(saliency8U, medianMap, kernelSize);
-
-        // locate max median saliency response
+        // locate max saliency response
         double minVal = 0, maxVal = 0;
         Point minLoc = default, maxLoc = default;
-        CvInvoke.MinMaxLoc(medianMap, ref minVal, ref maxVal, ref minLoc, ref maxLoc);
+        CvInvoke.MinMaxLoc(blurred, ref minVal, ref maxVal, ref minLoc, ref maxLoc);
 
         // center roi at the most salient point
         var topLeftX = Math.Clamp(maxLoc.X - cropW / 2, 0, w - cropW);
@@ -293,6 +277,7 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
         roi = RoiOptions.SaliencyPaddingRatio.With(roi, new Rectangle(0, 0, w, h));
         return roi;
     }
+
 
     /// <summary>
     ///     Picks a crop window (fixed size) biased to faces, then aligned with saliency for better context.
@@ -382,100 +367,97 @@ public sealed class ImageProcessor(RoiOptions roiOptions) : IDisposable
     {
         var faces = new List<RoiCandidate>(4);
 
+        if (image.Mat.IsEmpty)
+            return faces;
+
+        // Init face model on first use
+        if (!await InitFaceModelAsync().ConfigureAwait(false))
+            return faces;
+
+        // Run detection
+        using var raw = new Mat();
+
+        await _faceDetectGate.WaitAsync().ConfigureAwait(false);
         try
         {
-            // Get Face Model
-            if (!await InitFaceModelAsync().ConfigureAwait(false))
-                return faces;
             var model = await _faceModel.Value.ConfigureAwait(false);
+            model.Detect(image.Mat, raw);
+        }
+        finally
+        {
+            _faceDetectGate.Release();
+        }
 
-            // Detect Faces
-            using var raw = new Mat();
-            await _faceDetectGate.WaitAsync().ConfigureAwait(false);
-            try
+        // expect at least 5 cols: x y w h score
+        if (raw.IsEmpty || raw.Rows <= 0 || raw.Cols < 5)
+            return faces;
+
+        // Ensure contiguous (only clone when needed)
+        using var contiguous = raw.IsContinuous ? null : raw.Clone();
+        var src = raw.IsContinuous ? raw : contiguous!;
+
+        // Ensure CV_32F (convert to a new Mat when needed)
+        using var mat32F = src.Depth == DepthType.Cv32F ? null : new Mat();
+        var mat = src.Depth == DepthType.Cv32F ? src : mat32F!;
+        if (src.Depth != DepthType.Cv32F)
+            src.ConvertTo(mat, DepthType.Cv32F);
+
+        var rows = mat.Rows;
+        var cols = mat.Cols;
+
+        // expect at least 5 cols: x y w h score
+        if (cols < 5 || rows <= 0)
+            return faces;
+
+        // Protect against insane sizes (can happen if model output is unexpected)
+        // len = rows * cols floats
+        var len64 = (long)rows * cols;
+        if (len64 > int.MaxValue)
+            return faces;
+
+        var len = (int)len64;
+
+        var usePool = len <= 1_000_000; // threshold ~ 4MB (1e6 floats ~ 4MB)
+        var buf = usePool
+            ? ArrayPool<float>.Shared.Rent(len)
+            : new float[len]; // let GC reclaim huge arrays instead of ArrayPool hoarding them
+
+        try
+        {
+            Marshal.Copy(mat.DataPointer, buf, 0, len);
+
+            var border = new Rectangle(0, 0, image.Mat.Width, image.Mat.Height);
+
+            for (var r = 0; r < rows; r++)
             {
-                model.Detect(image.Mat, raw);
-            }
-            finally
-            {
-                _faceDetectGate.Release();
-            }
+                var i = r * cols;
 
-            if (raw.IsEmpty || raw.Rows <= 0 || raw.Cols < 5)
-                return faces;
+                // Read row
+                var x = (int)MathF.Round(buf[i + 0]);
+                var y = (int)MathF.Round(buf[i + 1]);
+                var w = (int)MathF.Round(buf[i + 2]);
+                var h = (int)MathF.Round(buf[i + 3]);
+                var score = buf[i + 4];
 
-            var mat = raw;
-            var disposeMat = false;
+                if (score < minScore || w <= 0 || h <= 0)
+                    continue;
 
-            try
-            {
-                // Ensure contiguous memory for Marshal.Copy
-                if (!raw.IsContinuous)
-                {
-                    mat = raw.Clone();
-                    disposeMat = true;
-                }
+                var rect = Rectangle.Intersect(new Rectangle(x, y, w, h), border);
+                if (rect.Width <= 0 || rect.Height <= 0)
+                    continue;
 
-                // Ensure float32 for parsing
-                if (mat.Depth != DepthType.Cv32F)
-                {
-                    var tmp = new Mat();
-                    mat.ConvertTo(tmp, DepthType.Cv32F);
-
-                    if (disposeMat) mat.Dispose();
-                    mat = tmp;
-                    disposeMat = true;
-                }
-
-                var rows = mat.Rows;
-                var cols = mat.Cols;
-                var len = rows * cols;
-
-                var pool = ArrayPool<float>.Shared; // ArrayPool => reduce allocations
-                var buf = pool.Rent(len);
-
-                try
-                {
-                    Marshal.Copy(mat.DataPointer, buf, 0, len);
-
-                    var border = new Rectangle(0, 0, image.Mat.Width, image.Mat.Height);
-                    for (var r = 0; r < rows; r++)
-                    {
-                        var i = r * cols;
-
-                        var x = (int)MathF.Round(buf[i + 0]);
-                        var y = (int)MathF.Round(buf[i + 1]);
-                        var w = (int)MathF.Round(buf[i + 2]);
-                        var h = (int)MathF.Round(buf[i + 3]);
-                        var score = buf[i + 4];
-
-                        if (score < minScore || w <= 0 || h <= 0)
-                            continue;
-
-                        var rect = Rectangle.Intersect(new Rectangle(x, y, w, h), border);
-                        if (rect.Width <= 0 || rect.Height <= 0)
-                            continue;
-
-                        faces.Add(new RoiCandidate(rect, score));
-                    }
-                }
-                finally
-                {
-                    pool.Return(buf);
-                }
-            }
-            finally
-            {
-                if (disposeMat) mat.Dispose();
+                faces.Add(new RoiCandidate(rect, score));
             }
         }
-        catch
+        finally
         {
-            faces.Clear();
+            if (usePool)
+                ArrayPool<float>.Shared.Return(buf);
         }
 
         return faces;
     }
+
 
     /// <summary>
     ///     Centers a fixed-size crop window on the anchor rectangle, shifting it as needed to stay within image bounds.

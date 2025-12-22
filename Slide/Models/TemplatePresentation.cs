@@ -12,8 +12,8 @@ namespace SlideGenerator.Framework.Slide.Models;
 /// </summary>
 public sealed class TemplatePresentation : Presentation
 {
-    private readonly Spire.Presentation.Presentation _spirePresentation = new();
     private readonly ISlide _spireMainSlide;
+    private readonly Spire.Presentation.Presentation _spirePresentation;
 
     /// <summary>
     ///     Opens a template presentation.
