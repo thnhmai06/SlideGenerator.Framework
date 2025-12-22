@@ -44,6 +44,8 @@
 		<PackageReference Include="ClosedXML" Version="0.104.2" />
 		<PackageReference Include="Spire.Presentation" Version="10.1.1" />
 		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.0" />
+	<PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.3" />
+	<PackageReference Include="System.Security.Cryptography.Xml" Version="6.0.1" />
 	</ItemGroup>
 
 </Project>
