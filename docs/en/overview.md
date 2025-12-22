@@ -28,12 +28,6 @@ The backend orchestrates jobs and I/O; the framework performs the processing.
 - `Slide`: template loading, slide cloning, text replacement, image replacement.
 - `Image`: ROI detection, cropping, resizing, and helpers.
 
-## Key constraints
-
-- Use framework APIs for all workbook/slide/image/cloud operations.
-- Do not reimplement framework logic in the backend.
-- No third‑party replacements for these core operations.
-
 ## Threading and disposal
 
 - `Workbook` and presentation models are `IDisposable`.

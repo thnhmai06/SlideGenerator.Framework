@@ -108,12 +108,6 @@ Notes:
 - Face model init is async and serialized inside `ImageProcessor`.
 - Exceptions are thrown for unsupported or invalid inputs; callers should catch and handle.
 
-## Constraints
-
-- Do not reimplement framework functionality in the backend.
-- Do not add third-party libraries to replace framework behavior.
-- Treat the framework as the source of truth for workbook, slide, image, and cloud operations.
-
 ## Contributors:
 
 - **Main Developer: [@thnhmai06](https://github.com/thnhmai06)**

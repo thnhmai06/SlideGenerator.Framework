@@ -26,12 +26,6 @@ Backend chỉ điều phối và I/O; framework thực thi xử lý.
 - `Slide`: nạp template, clone slide, thay text/ảnh.
 - `Image`: phát hiện ROI, crop, resize.
 
-## Ràng buộc chính
-
-- Dùng API của framework cho workbook/slide/image/cloud.
-- Không re‑implement logic ở backend.
-- Không thay thế bằng thư viện thứ ba.
-
 ## Luồng và dispose
 
 - `Workbook` và các model presentation là `IDisposable`.
