@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using DocumentFormat.OpenXml.Packaging;
@@ -99,7 +100,10 @@ public static partial class TextReplacer
             var textRuns = textBody.Descendants<DrawingText>().ToList();
             if (textRuns.Count == 0) continue;
 
-            var original = string.Concat(textRuns.Select(run => run.Text));
+             var builder = new StringBuilder();
+            foreach (var run in textRuns)
+                builder.Append(run.Text);
+            var original = builder.ToString();
             if (string.IsNullOrEmpty(original) || !original.Contains("{{", StringComparison.Ordinal))
                 continue;
 

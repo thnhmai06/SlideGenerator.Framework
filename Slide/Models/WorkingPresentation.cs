@@ -131,16 +131,19 @@ public sealed class WorkingPresentation : Presentation
         // add slide to SlideIdList
         var slideIdList = GetSlideIdList()!;
         uint nextId = 256;
-
-        var ids = slideIdList.ChildElements
-            .OfType<SlideId>()
-            .Select(s => s.Id?.Value)
-            .Where(v => v.HasValue)
-            .Select(v => v!.Value)
-            .ToList();
-
-        if (ids.Count != 0)
-            nextId = ids.Max() + 1;
+        var hasIds = false;
+        uint maxId = 0;
+        foreach (var slideId in slideIdList.ChildElements.OfType<SlideId>())
+        {
+            var idValue = slideId.Id?.Value;
+            if (!idValue.HasValue) continue;
+            if (!hasIds || idValue.Value > maxId)
+            {
+                maxId = idValue.Value;
+                hasIds = true;
+            }
+        }
+        if (hasIds) nextId = maxId + 1;
 
         var newSlideId = new SlideId
         {
