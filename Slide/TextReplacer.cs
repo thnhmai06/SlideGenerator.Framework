@@ -100,7 +100,7 @@ public static partial class TextReplacer
             var textRuns = textBody.Descendants<DrawingText>().ToList();
             if (textRuns.Count == 0) continue;
 
-             var builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (var run in textRuns)
                 builder.Append(run.Text);
             var original = builder.ToString();

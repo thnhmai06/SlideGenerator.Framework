@@ -4,13 +4,13 @@ A .NET framework for generating PowerPoint files from Excel data.
 
 Docs:
 
-- English: [docs/en](docs/en)
-- Vietnamese: [docs/vi](docs/vi)
+- [English](docs/en)
+- [Vietnamese](docs/vi)
 
 Quick links:
 
-- Overview: [docs/en/overview.md](docs/en/overview.md)
-- Usage: [docs/en/usage.md](docs/en/usage.md)
+- [Overview](docs/en/overview.md)
+- [Usage](docs/en/usage.md)
 
 ## Modules
 

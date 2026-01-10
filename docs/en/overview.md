@@ -4,10 +4,11 @@ Vietnamese version: [Vietnamese](../vi/overview.md)
 
 ## Table of contents
 
-1. [Purpose](#purpose)
-2. [Modules](#modules)
-3. [Key constraints](#key-constraints)
-4. [Threading and disposal](#threading-and-disposal)
+- [Framework Overview](#framework-overview)
+  - [Table of contents](#table-of-contents)
+  - [Purpose](#purpose)
+  - [Modules](#modules)
+  - [Threading and disposal](#threading-and-disposal)
 
 ## Purpose
 

@@ -143,6 +143,7 @@ public sealed class WorkingPresentation : Presentation
                 hasIds = true;
             }
         }
+
         if (hasIds) nextId = maxId + 1;
 
         var newSlideId = new SlideId
