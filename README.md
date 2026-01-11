@@ -102,13 +102,31 @@ Usage:
 
 ```csharp
 using var template = new TemplatePresentation("template.pptx");
-var working = template.SaveAs("output.pptx");
-var slidePart = template.GetSlidePart();
+using var working = template.SaveAs("output.pptx");
 
+// Discover image placeholders from the template.
+var previews = template.GetAllPreviewImageShapes();
+var shapeId = previews.Keys.First(); // example
+
+// Clone the template slide for each output slide (per data row).
+// position: 1-based. If omitted, it appends to the end.
+var slidePart = working.CopySlide(template.MainSlideRelationshipId, position: 2);
+
+// Replace text placeholders (use keys without {{ }}).
 await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
 {
-    ["{{Name}}"] = "Alice"
+    ["Name"] = "Alice",
+    ["Title"] = "Engineer"
 });
+
+// Replace image by shape id.
+var shape = Presentation.GetShapeById(slidePart, shapeId);
+using var png = File.OpenRead("photo.png");
+ImageReplacer.ReplaceImage(slidePart, shape!, png);
+
+// Remove the original template slide (now duplicated at the beginning).
+working.RemoveSlide(1);
+working.Save();
 ```
 
 Notes:
@@ -117,6 +135,7 @@ Notes:
 - When the template has more than one slide, `NotOnlyOneSlidePresentation` is thrown.
 - Use `GetAllPreviewImageShapes()` to discover image shape ids and previews.
 - Use `ImageReplacer.ReplaceImage(...)` for image placeholders.
+- Call `CopySlide(...)` for each row, then `Save()` the working presentation.
 
 ## Image
 
