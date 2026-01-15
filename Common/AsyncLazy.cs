@@ -29,7 +29,7 @@ public sealed class AsyncLazy<T>
     ///     Gets the lazily initialized value asynchronously.
     /// </summary>
     public Task<T> Value => _instance?.Value
-                            ?? Task.FromException<T>(new ObjectDisposedException(nameof(AsyncLazy<T>)));
+                            ?? Task.FromException<T>(new ObjectDisposedException(nameof(AsyncLazy<>)));
 
     /// <summary>
     ///     Gets the result if available, otherwise returns default.
@@ -90,7 +90,7 @@ public sealed class AsyncLazy<T>
     private Lazy<Task<T>> CreateLazy()
     {
         return new Lazy<Task<T>>(
-            () => Task.Run(_factory),
+            () => _factory(),
             LazyThreadSafetyMode.ExecutionAndPublication);
     }
 }
