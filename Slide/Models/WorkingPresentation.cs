@@ -28,7 +28,7 @@ public sealed class WorkingPresentation : Presentation
     /// </summary>
     public void Save()
     {
-        GetPresentationPart()!.Presentation.Save();
+        GetPresentationPart()!.Presentation!.Save();
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ public sealed class WorkingPresentation : Presentation
         var newSlide = presentationPart!.AddNewPart<SlidePart>();
 
         // clone slide XML (contains transition/timing)
-        newSlide.Slide = (DocumentFormat.OpenXml.Presentation.Slide)sourceSlide!.Slide.CloneNode(true);
+        newSlide.Slide = (DocumentFormat.OpenXml.Presentation.Slide)sourceSlide!.Slide!.CloneNode(true);
 
         // old rId -> new rId
         var ridMap = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -157,7 +157,7 @@ public sealed class WorkingPresentation : Presentation
         else
             slideIdList.InsertAt(newSlideId, position - 1);
 
-        presentationPart.Presentation.Save();
+        presentationPart.Presentation!.Save();
         return newSlide;
     }
 

@@ -78,7 +78,7 @@ public abstract class Presentation : IDisposable
     /// </summary>
     public SlideIdList? GetSlideIdList()
     {
-        return GetPresentationPart()?.Presentation.SlideIdList;
+        return GetPresentationPart()?.Presentation!.SlideIdList;
     }
 
     /// <summary>
@@ -95,9 +95,8 @@ public abstract class Presentation : IDisposable
     /// </summary>
     public static IEnumerable<PresentationText> GetPresentationTexts(SlidePart slidePart)
     {
-        return slidePart.Slide.Descendants<PresentationText>();
+        return slidePart.Slide!.Descendants<PresentationText>();
     }
-
 
     /// <summary>
     ///     Gets all drawing text elements from a slide.
@@ -125,7 +124,7 @@ public abstract class Presentation : IDisposable
     /// <param name="slidePart">The slide part.</param>
     public static IEnumerable<Shape> GetShapes(SlidePart slidePart)
     {
-        return slidePart.Slide.Descendants<Shape>();
+        return slidePart.Slide!.Descendants<Shape>();
     }
 
     /// <summary>
@@ -142,7 +141,7 @@ public abstract class Presentation : IDisposable
     /// </summary>
     public static IEnumerable<Picture> GetPictures(SlidePart slidePart)
     {
-        return slidePart.Slide.Descendants<Picture>();
+        return slidePart.Slide!.Descendants<Picture>();
     }
 
     /// <summary>

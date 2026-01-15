@@ -33,7 +33,7 @@ public static class ImageReplacer
             throw new ShapeDoesNotHaveImage(GetPictureId(picture), "No Embed reference in Blip.");
 
         embed.Value = rId;
-        slidePart.Slide.Save();
+        slidePart.Slide!.Save();
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public static class ImageReplacer
             throw new ShapeDoesNotHaveImage(GetShapeId(shape), "No Blip element found in shape fill.");
 
         blip.Embed.Value = rId;
-        slidePart.Slide.Save();
+        slidePart.Slide!.Save();
     }
 
     /// <summary>

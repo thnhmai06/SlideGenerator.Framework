@@ -59,7 +59,7 @@ public sealed class TemplatePresentation : Presentation
     public WorkingPresentation SaveAs(string destPath)
     {
         var newDoc = Doc.Clone(destPath, true);
-        newDoc.PresentationPart!.Presentation.Save();
+        newDoc.PresentationPart!.Presentation!.Save();
         return new WorkingPresentation(newDoc, destPath);
     }
 

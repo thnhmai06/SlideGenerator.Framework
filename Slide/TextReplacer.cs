@@ -47,7 +47,7 @@ public static partial class TextReplacer
         HashSet<string> templates = [];
 
         // Scan presentation text (quick)
-        var allText = slidePart.Slide.InnerText;
+        var allText = slidePart.Slide!.InnerText;
         templates.UnionWith(ScanPlaceholders(allText));
 
         // Scan drawing text
@@ -119,7 +119,7 @@ public static partial class TextReplacer
         }
 
         if (hasChanges)
-            slidePart.Slide.Save();
+            slidePart.Slide!.Save();
 
         return replacedCount;
     }
