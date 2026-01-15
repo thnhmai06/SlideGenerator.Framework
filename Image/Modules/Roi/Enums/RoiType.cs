@@ -1,4 +1,4 @@
-namespace SlideGenerator.Framework.Image.Enums;
+namespace SlideGenerator.Framework.Image.Modules.Roi.Enums;
 
 /// <summary>
 ///     Specifies the region of interest (ROI) detection type for image cropping.
@@ -6,9 +6,9 @@ namespace SlideGenerator.Framework.Image.Enums;
 public enum RoiType
 {
     /// <summary>
-    ///     Prominent + Using Face Detection to find the most important region of the image.
+    ///     Uses face detection (eye landmarks) to anchor a rule-of-thirds crop.
     /// </summary>
-    Attention,
+    RuleOfThirds,
 
     /// <summary>
     ///     Detects the most prominent/salient region of the image using spectral residual saliency.

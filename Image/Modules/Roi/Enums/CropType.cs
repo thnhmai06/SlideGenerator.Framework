@@ -1,4 +1,4 @@
-﻿namespace SlideGenerator.Framework.Image.Enums;
+﻿namespace SlideGenerator.Framework.Image.Modules.Roi.Enums;
 
 /// <summary>
 ///     Specifies how an image is cropped relative to the target dimensions.

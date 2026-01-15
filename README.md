@@ -141,25 +141,34 @@ Notes:
 
 Key types:
 
-- `SlideGenerator.Framework.Image.ImageProcessor`
-- `SlideGenerator.Framework.Image.Configs.RoiOptions`
-- `SlideGenerator.Framework.Image.Enums.RoiType`
-- `SlideGenerator.Framework.Image.Enums.CropType`
+- `SlideGenerator.Framework.Image.Models.Image`
+- `SlideGenerator.Framework.Image.Modules.FaceDetection.Models.FaceDetectorModel`
+- `SlideGenerator.Framework.Image.Modules.FaceDetection.Models.YuNetModel`
+- `SlideGenerator.Framework.Image.Modules.Roi.RoiModule`
+- `SlideGenerator.Framework.Image.Modules.Roi.Configs.RoiOptions`
+- `SlideGenerator.Framework.Image.Modules.Roi.Enums.RoiType`
+- `SlideGenerator.Framework.Image.Modules.Roi.Enums.CropType`
 
 Usage:
 
 ```csharp
-var processor = new ImageProcessor(new RoiOptions());
-var selector = processor.GetRoiSelector(RoiType.Center);
-await ImageProcessor.CropToRoiAsync(imageData, targetSize, selector, CropType.Crop);
+using var image = new Image("photo.png");
+using var faceDetection = new YuNetModel();
+var roi = new RoiModule(new RoiOptions())
+{
+    FaceDetectionModel = faceDetection
+};
+
+var selector = roi.GetRoiSelector(RoiType.Center);
+await RoiModule.CropToRoiAsync(image, targetSize, selector, CropType.Crop);
 ```
 
 Notes:
 
-- Face model init is async and serialized inside `ImageProcessor`.
+- Face model init is async and serialized inside `YuNetModel`.
 - Exceptions are thrown for unsupported or invalid inputs; callers should catch and handle.
 
 ## Contributors:
 
-- **Main Developer: [@thnhmai06](https://github.com/thnhmai06)**
-- Cloud Logic: [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)
+- **Leader: [@thnhmai06](https://github.com/thnhmai06)**
+- [@Hair-Nguyeenx](https://github.com/Hair-Nguyeenx)

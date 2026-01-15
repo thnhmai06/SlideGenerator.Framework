@@ -4,10 +4,12 @@ Vietnamese version: [Vietnamese](../vi/usage.md)
 
 ## Table of contents
 
-1. [Cloud](#cloud)
-2. [Sheet](#sheet)
-3. [Slide](#slide)
-4. [Image](#image)
+- [Usage](#usage)
+  - [Table of contents](#table-of-contents)
+  - [Cloud](#cloud)
+  - [Sheet](#sheet)
+  - [Slide](#slide)
+  - [Image](#image)
 
 ## Cloud
 
@@ -67,7 +69,13 @@ Notes:
 ## Image
 
 ```csharp
-var processor = new ImageProcessor(new RoiOptions());
-var selector = processor.GetRoiSelector(RoiType.Center);
-await ImageProcessor.CropToRoiAsync(imageData, targetSize, selector, CropType.Crop);
+using var image = new Image("photo.png");
+using var faceDetection = new YuNetModel();
+var roi = new RoiModule(new RoiOptions())
+{
+    FaceDetectionModel = faceDetection
+};
+
+var selector = roi.GetRoiSelector(RoiType.Center);
+await RoiModule.CropToRoiAsync(image, targetSize, selector, CropType.Crop);
 ```

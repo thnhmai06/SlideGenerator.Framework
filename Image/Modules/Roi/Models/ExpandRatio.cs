@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SlideGenerator.Framework.Image.Models;
+namespace SlideGenerator.Framework.Image.Modules.Roi.Models;
 
 /// <summary>
 ///     Represents expansion ratios of a rectangle.

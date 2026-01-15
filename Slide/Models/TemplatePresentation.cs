@@ -1,6 +1,5 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using SlideGenerator.Framework.Slide.DTOs;
 using SlideGenerator.Framework.Slide.Exceptions;
 using Spire.Presentation;
 using Spire.Presentation.Drawing;
@@ -68,9 +67,9 @@ public sealed class TemplatePresentation : Presentation
     ///     Gets all preview of image shapes from the template slide.
     /// </summary>
     /// <returns>A dictionary mapping shape IDs to shape image info.</returns>
-    public Dictionary<uint, ShapeImagePreview> GetAllPreviewImageShapes()
+    public Dictionary<uint, ImageShapePreview> GetAllPreviewImageShapes()
     {
-        Dictionary<uint, ShapeImagePreview> shapes = [];
+        Dictionary<uint, ImageShapePreview> shapes = [];
         foreach (var shape in _spireMainSlide.Shapes.ToArray())
         {
             if (shape.IsHidden) continue;
@@ -79,7 +78,7 @@ public sealed class TemplatePresentation : Presentation
                 using var imageStream = shape.SaveAsImage();
                 using var ms = new MemoryStream();
                 imageStream.CopyTo(ms);
-                shapes.Add(shape.Id, new ShapeImagePreview(shape.Name, ms.ToArray()));
+                shapes.Add(shape.Id, new ImageShapePreview(shape.Name, ms.ToArray()));
             }
         }
 

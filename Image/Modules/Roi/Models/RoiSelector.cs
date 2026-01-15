@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace SlideGenerator.Framework.Image.Models;
+namespace SlideGenerator.Framework.Image.Modules.Roi.Models;
 
 /// <summary>
 ///     Asynchronously computes a region of interest (ROI) for an image and a target size.
@@ -12,6 +12,6 @@ namespace SlideGenerator.Framework.Image.Models;
 ///     <see cref="Rectangle" /> representing the computed region of interest,
 ///     constrained to the image bounds.
 /// </returns>
-public delegate ValueTask<Rectangle> AsyncRoiSelector(
-    ImageData image,
+public delegate ValueTask<Rectangle> RoiSelector(
+    Image.Models.Image image,
     Size targetSize);
