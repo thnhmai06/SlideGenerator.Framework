@@ -1,5 +1,4 @@
 using System.Drawing;
-using SlideGenerator.Framework.Image.Modules.FaceDetection.Models;
 using SlideGenerator.Framework.Image.Modules.Roi.Configs;
 using SlideGenerator.Framework.Image.Modules.Roi.Enums;
 using SlideGenerator.Framework.Image.Modules.Roi.Models;

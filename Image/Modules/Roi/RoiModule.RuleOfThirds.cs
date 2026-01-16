@@ -38,16 +38,20 @@ public sealed partial class RoiModule
     }
 
     /// <summary>
-    /// Determines the center point between the eyes within the detected face region of the specified
-    /// image.
+    ///     Determines the center point between the eyes within the detected face region of the specified
+    ///     image.
     /// </summary>
-    /// <remarks>If no face is detected in the image, the method returns a point horizontally centered within
-    /// the border and vertically positioned at a standard eye line ratio. The returned point is always constrained to
-    /// the provided border.</remarks>
+    /// <remarks>
+    ///     If no face is detected in the image, the method returns a point horizontally centered within
+    ///     the border and vertically positioned at a standard eye line ratio. The returned point is always constrained to
+    ///     the provided border.
+    /// </remarks>
     /// <param name="image">The image in which to detect the face and calculate the eye center.</param>
     /// <param name="border">The bounding rectangle that defines the area within which the eye center point will be clamped.</param>
-    /// <returns>A <see cref="Point"/> representing the center between the eyes, clamped to the specified border. If no face is
-    /// detected, returns a default point along the typical eye line.</returns>
+    /// <returns>
+    ///     A <see cref="Point" /> representing the center between the eyes, clamped to the specified border. If no face is
+    ///     detected, returns a default point along the typical eye line.
+    /// </returns>
     private async ValueTask<Point> GetEyeCenterAsync(Image.Models.Image image, Rectangle border)
     {
         var faces = await FaceDetectorModel!.DetectAsync(image, Options.FaceConfidence).ConfigureAwait(false);
@@ -62,17 +66,24 @@ public sealed partial class RoiModule
     }
 
     /// <summary>
-    /// Calculates a crop rectangle positioned according to the rule of thirds, centering the specified eye point
-    /// horizontally and aligning it vertically based on a standard eye-line ratio.
+    ///     Calculates a crop rectangle positioned according to the rule of thirds, centering the specified eye point
+    ///     horizontally and aligning it vertically based on a standard eye-line ratio.
     /// </summary>
-    /// <remarks>The returned rectangle is clamped to ensure it does not exceed the boundaries of the provided
-    /// border. This method is typically used in image processing scenarios to generate visually balanced crops centered
-    /// around a subject's eyes.</remarks>
+    /// <remarks>
+    ///     The returned rectangle is clamped to ensure it does not exceed the boundaries of the provided
+    ///     border. This method is typically used in image processing scenarios to generate visually balanced crops centered
+    ///     around a subject's eyes.
+    /// </remarks>
     /// <param name="border">The bounding rectangle that defines the limits within which the crop rectangle must remain.</param>
-    /// <param name="eyeCenter">The point representing the center of the eye, used as a reference for positioning the crop rectangle.</param>
+    /// <param name="eyeCenter">
+    ///     The point representing the center of the eye, used as a reference for positioning the crop
+    ///     rectangle.
+    /// </param>
     /// <param name="crop">The size of the desired crop rectangle.</param>
-    /// <returns>A rectangle representing the crop area, adjusted to fit within the specified border and positioned according to
-    /// the rule of thirds relative to the eye center.</returns>
+    /// <returns>
+    ///     A rectangle representing the crop area, adjusted to fit within the specified border and positioned according to
+    ///     the rule of thirds relative to the eye center.
+    /// </returns>
     private static Rectangle FollowRuleOfThirds(Rectangle border, Point eyeCenter, Size crop)
     {
         var x = (int)MathF.Round(eyeCenter.X - crop.Width / 2f);

@@ -26,7 +26,7 @@ public readonly record struct Face(
         if (RightEye is { } rightEye && LeftEye is { } leftEye)
         {
             center = new Point(
-                (int)MathF.Round((rightEye.X + leftEye.X) / 2f), 
+                (int)MathF.Round((rightEye.X + leftEye.X) / 2f),
                 (int)MathF.Round((rightEye.Y + leftEye.Y) / 2f));
             return true;
         }
