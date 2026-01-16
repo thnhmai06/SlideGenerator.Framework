@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build-and-pack:
-    name: Build & Release Assets
+    name: Build & Release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,11 @@ jobs:
         run: dotnet restore SlideGenerator.Framework.csproj
 
       - name: Pack
-        run: dotnet pack SlideGenerator.Framework.csproj -c Release /p:PackageVersion=${{ steps.get_version.outputs.VERSION }} -o artifacts/nuget
+        run: >
+          dotnet pack SlideGenerator.Framework.csproj
+          -c Release
+          /p:PackageVersion=${{ steps.get_version.outputs.VERSION }}
+          -o artifacts/nuget
 
       - name: Publish DLL
         run: dotnet publish SlideGenerator.Framework.csproj -c Release -o artifacts/bin
@@ -64,8 +68,20 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Add GitHub NuGet source
+        run: |
+          dotnet nuget add source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json \
+            --name github \
+            --username ${{ github.repository_owner }} \
+            --password ${{ secrets.NUGET_GITHUB_PAT }} \
+            --store-password-in-clear-text
+            
       - name: Publish to GitHub Packages
-        run: dotnet nuget push "artifacts/nuget/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+        run: >
+          dotnet nuget push "artifacts/nuget/*.nupkg"
+          --source github
+          --api-key ${{ secrets.NUGET_GITHUB_PAT }}
+          --skip-duplicate
 
   push-nuget:
     name: Push to NuGet.org
@@ -86,4 +102,8 @@ jobs:
       - name: Publish to NuGet.org
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: dotnet nuget push "artifacts/nuget/*.nupkg" --api-key $NUGET_API_KEY --source "https://api.nuget.org/v3/index.json" --skip-duplicate
+        run: >
+          dotnet nuget push "artifacts/nuget/*.nupkg"
+          --api-key $NUGET_API_KEY
+          --source "https://api.nuget.org/v3/index.json"
+          --skip-duplicate
