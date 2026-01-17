@@ -113,7 +113,8 @@ var shapeId = previews.Keys.First(); // example
 var slidePart = working.CopySlide(template.MainSlideRelationshipId, position: 2);
 
 // Replace text placeholders (use keys without {{ }}).
-await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
+// returns (uint Count, List<Details> Details)
+var (replacedCount, details) = await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
 {
     ["Name"] = "Alice",
     ["Title"] = "Engineer"

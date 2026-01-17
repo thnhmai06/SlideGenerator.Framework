@@ -43,7 +43,7 @@ var shapeId = previews.Keys.First(); // ví dụ
 var slidePart = working.CopySlide(template.MainSlideRelationshipId, position: 2);
 
 // Thay thế text (dùng key không kèm {{ }}).
-await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
+var (replacedCount, details) = await TextReplacer.ReplaceAsync(slidePart, new Dictionary<string, string>
 {
     ["Name"] = "Alice",
     ["Title"] = "Engineer"
