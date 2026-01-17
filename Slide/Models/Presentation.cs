@@ -54,15 +54,15 @@ public abstract class Presentation : IDisposable
 
     public void Dispose()
     {
-        if (_disposed) return;
-        _disposed = true;
-        Doc.Dispose();
-        Dispose(_disposed);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
+        if (_disposed) return;
+        if (disposing) Doc.Dispose();
+        _disposed = true;
     }
 
     /// <summary>

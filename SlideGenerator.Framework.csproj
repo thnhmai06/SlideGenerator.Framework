@@ -10,7 +10,7 @@
 		
 		<!-- NuGet Package Metadata -->
 		<PackageId>SlideGenerator.Framework</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<Authors>thnhmai06</Authors>
 		<Description>A library for generating PowerPoint presentations from Excel data with intelligent image cropping and text replacement.</Description>
 		<PackageTags>PowerPoint;Excel;Slide;Generator;OpenXML;Presentation</PackageTags>

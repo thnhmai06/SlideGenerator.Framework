@@ -18,6 +18,10 @@ public static partial class TextReplacer
 {
     private const string TemplatePattern = @"\{\{\s*([^{}]+?)\s*\}\}"; // {{ placeholder }}
 
+    private static readonly StubbleVisitorRenderer Stubble = new StubbleBuilder()
+        .Configure(settings => settings.SetEncodingFunction(value => value))
+        .Build();
+
     [GeneratedRegex(TemplatePattern)]
     private static partial Regex TemplateRegex();
 
@@ -66,23 +70,22 @@ public static partial class TextReplacer
     /// </summary>
     /// <param name="slidePart">The slide part to modify.</param>
     /// <param name="replacements">Dictionary mapping placeholder names to replacement values.</param>
-    /// <returns>The number of replacements made.</returns>
-    public static async Task<uint> ReplaceAsync(SlidePart slidePart, ReplaceInstructions replacements)
+    /// <returns>A tuple containing the number of replacements made and details of replacements.</returns>
+    public static async Task<(uint Count, List<(uint ShapeId, string Placeholder, string Value)> Details)> ReplaceAsync(
+        SlidePart slidePart, ReplaceInstructions replacements)
     {
         uint replacedCount = 0;
-        if (replacements.Count == 0) return replacedCount;
+        var details = new List<(uint ShapeId, string Placeholder, string Value)>();
+        if (replacements.Count == 0) return (replacedCount, details);
 
         var sanitized = SanitizeReplacements(replacements);
-        var stubble = new StubbleBuilder()
-            .Configure(settings => settings.SetEncodingFunction(value => value))
-            .Build();
         var hasChanges = false;
 
         // Replace in presentation text
         var presentationTexts = Presentation.GetPresentationTexts(slidePart);
         foreach (var presText in presentationTexts)
         {
-            var newText = await RenderSafeAsync(stubble, presText.Text, sanitized);
+            var newText = await RenderSafeAsync(Stubble, presText.Text, sanitized);
             if (newText != presText.Text)
             {
                 presText.Text = newText;
@@ -94,20 +97,27 @@ public static partial class TextReplacer
         // Replace in shape text bodies (handles placeholders split across runs).
         foreach (var shape in Presentation.GetShapes(slidePart))
         {
+            var shapeId = shape.NonVisualShapeProperties?.NonVisualDrawingProperties?.Id?.Value ?? 0;
             var textBody = shape.TextBody;
             if (textBody is null) continue;
 
             var textRuns = textBody.Descendants<DrawingText>().ToList();
             if (textRuns.Count == 0) continue;
 
-            var builder = new StringBuilder();
+            var builder = new StringBuilder(textRuns.Sum(r => r.Text.Length));
             foreach (var run in textRuns)
                 builder.Append(run.Text);
+
             var original = builder.ToString();
-            if (string.IsNullOrEmpty(original) || !original.Contains("{{", StringComparison.Ordinal))
+            if (builder.Length == 0 || !original.Contains("{{", StringComparison.Ordinal))
                 continue;
 
-            var newText = await RenderSafeAsync(stubble, original, sanitized);
+            var placeholders = ScanPlaceholders(original);
+            foreach (var p in placeholders)
+                if (replacements.TryGetValue(p, out var val))
+                    details.Add((shapeId, p, val));
+
+            var newText = await RenderSafeAsync(Stubble, original, sanitized);
             if (newText == original) continue;
 
             textRuns[0].Text = newText;
@@ -121,7 +131,7 @@ public static partial class TextReplacer
         if (hasChanges)
             slidePart.Slide!.Save();
 
-        return replacedCount;
+        return (replacedCount, details);
     }
 
     private static async Task<string> RenderSafeAsync(
@@ -173,8 +183,9 @@ public static partial class TextReplacer
     /// </summary>
     /// <param name="slidePart">The slide part to modify.</param>
     /// <param name="replacements">Dictionary mapping placeholder names to replacement values.</param>
-    /// <returns>The number of replacements made.</returns>
-    public static uint Replace(SlidePart slidePart, ReplaceInstructions replacements)
+    /// <returns>A tuple containing the number of replacements made and details of replacements.</returns>
+    public static (uint Count, List<(uint ShapeId, string Placeholder, string Value)> Details) Replace(
+        SlidePart slidePart, ReplaceInstructions replacements)
     {
         return ReplaceAsync(slidePart, replacements).GetAwaiter().GetResult();
     }

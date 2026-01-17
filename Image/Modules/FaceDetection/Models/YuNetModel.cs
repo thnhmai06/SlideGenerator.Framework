@@ -174,6 +174,7 @@ public sealed class YuNetModel : FaceDetectorModel
             model?.Dispose();
         }
 
+        _model.Dispose();
         _detectLock.Dispose();
     }
 }

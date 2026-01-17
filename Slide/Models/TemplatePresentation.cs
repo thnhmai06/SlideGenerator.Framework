@@ -89,5 +89,6 @@ public sealed class TemplatePresentation : Presentation
     {
         if (!disposing) return;
         _spirePresentation.Dispose();
+        base.Dispose(disposing);
     }
 }
