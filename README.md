@@ -140,6 +140,6 @@ await RoiModule.CropToRoiAsync(image, new Size(200, 200), selector, CropType.Fil
 
 ## Contributors
 
-| [`<img src="https://github.com/thnhmai06.png" width="100"><br>``<sub>`**thnhmai06**`</sub>`](https://github.com/thnhmai06) | [`<img src="https://github.com/Hair-Nguyeenx.png" width="100"><br>``<sub>`**Hair-Nguyeenx**`</sub>`](https://github.com/Hair-Nguyeenx) |
+| [<img src="https://github.com/thnhmai06.png" width="100"><br><sub>**thnhmai06**</sub>](https://github.com/thnhmai06) | [<img src="https://github.com/Hair-Nguyeenx.png" width="100"><br><sub>**Hair-Nguyeenx**</sub>](https://github.com/Hair-Nguyeenx) |
 | :---------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                 `<span title="Project Manager">`👑 `<span title="Developer">`💻                                 |                                                         `<span title="Developer">`💻                                                         |
+|                                 <span title="Project Manager">👑 <span title="Developer">💻                                 |                                                        <span title="Developer">💻                                                         |
