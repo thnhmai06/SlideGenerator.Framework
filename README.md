@@ -1,6 +1,6 @@
 # SlideGenerator.Framework
 
-<p align="center">
+<p>
   <img src="https://img.shields.io/badge/.NET-10.0-512bd4?style=flat-square" alt=".NET 10" />
   <img src="https://img.shields.io/badge/EmguCV-4.9.0-orange?style=flat-square" alt="EmguCV" />
   <a href="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework"><img src="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework/badge" alt="CodeFactor" /></a>
