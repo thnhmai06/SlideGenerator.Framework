@@ -4,12 +4,8 @@
   <img src="https://img.shields.io/badge/.NET-10.0-512bd4?style=flat-square" alt=".NET 10" />
   <img src="https://img.shields.io/badge/EmguCV-4.9.0-orange?style=flat-square" alt="EmguCV" />
   <a href="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework"><img src="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework/badge" alt="CodeFactor" /></a>
-  <a href="https://ghloc.vercel.app/thnhmai06/SlideGenerator.Framework">
-            <img src="https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/thnhmai06/SlideGenerator.Framework/badge%3Ffilter=.ts$,.tsx$,.html$,.css$,.cs$%26format=human&style=flat-square&color=blue" alt="Lines of Code" />
-        </a>
-  <a href="https://github.com/thnhmai06/SlideGenerator.Framework/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/thnhmai06/SlideGenerator.Framework?style=flat-square" alt="License" />
-  </a>
+  <a href="https://ghloc.vercel.app/thnhmai06/SlideGenerator.Framework"><img src="https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/thnhmai06/SlideGenerator.Framework/badge%3Ffilter=.ts$,.tsx$,.html$,.css$,.cs$%26format=human&style=flat-square&color=blue" alt="Lines of Code" /></a>
+  <a href="https://github.com/thnhmai06/SlideGenerator.Framework/blob/main/LICENSE"><img src="https://img.shields.io/github/license/thnhmai06/SlideGenerator.Framework?style=flat-square" alt="License" /></a>
 </p>
 
 A powerful, standalone .NET library for orchestrating the generation of PowerPoint presentations from Excel data sources. It provides high-level abstractions for template manipulation, data extraction, and intelligent image processing.
