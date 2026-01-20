@@ -4,6 +4,9 @@
   <img src="https://img.shields.io/badge/.NET-10.0-512bd4?style=flat-square" alt=".NET 10" />
   <img src="https://img.shields.io/badge/EmguCV-4.9.0-orange?style=flat-square" alt="EmguCV" />
   <a href="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework"><img src="https://www.codefactor.io/repository/github/thnhmai06/slidegenerator.framework/badge" alt="CodeFactor" /></a>
+  <a href="https://ghloc.vercel.app/thnhmai06/SlideGenerator.Framework">
+            <img src="https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/thnhmai06/SlideGenerator.Framework/badge%3Ffilter=.ts$,.tsx$,.html$,.css$,.cs$%26format=human&style=flat-square&color=blue" alt="Lines of Code" />
+        </a>
   <a href="https://github.com/thnhmai06/SlideGenerator.Framework/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/thnhmai06/SlideGenerator.Framework?style=flat-square" alt="License" />
   </a>
@@ -17,12 +20,12 @@ A powerful, standalone .NET library for orchestrating the generation of PowerPoi
 
 The framework is composed of four core modules:
 
-| Module               | Namespace                          | Description                                                                             |
-| :------------------- | :--------------------------------- | :-------------------------------------------------------------------------------------- |
+| Module       | Namespace                        | Description                                                                             |
+| :----------- | :------------------------------- | :-------------------------------------------------------------------------------------- |
 | **☁️ Cloud** | `SlideGenerator.Framework.Cloud` | Resolves direct download links from Google Drive, OneDrive, and Google Photos.          |
-| **📊 Sheet**   | `SlideGenerator.Framework.Sheet` | efficient reading of Excel (.xlsx) and CSV files.                                       |
+| **📊 Sheet** | `SlideGenerator.Framework.Sheet` | efficient reading of Excel (.xlsx) and CSV files.                                       |
 | **🖼️ Slide** | `SlideGenerator.Framework.Slide` | PowerPoint manipulation: template loading, slide cloning, text/image replacement.       |
-| **🧠 Image**   | `SlideGenerator.Framework.Image` | Advanced image processing: Face detection, ROI (Region of Interest) cropping, resizing. |
+| **🧠 Image** | `SlideGenerator.Framework.Image` | Advanced image processing: Face detection, ROI (Region of Interest) cropping, resizing. |
 
 ## Prerequisites
 
@@ -30,8 +33,8 @@ The framework is composed of four core modules:
 
 This framework relies on **EmguCV** for computer vision tasks. You **must** install the native runtime package matching your target OS in the consuming project.
 
-| OS                      | Package                          |
-| :---------------------- | :------------------------------- |
+| OS                | Package                        |
+| :---------------- | :----------------------------- |
 | **Windows (x64)** | `Emgu.CV.runtime.windows`      |
 | **Linux (x64)**   | `Emgu.CV.runtime.ubuntu-x64`   |
 | **Linux (ARM)**   | `Emgu.CV.runtime.debian-arm`   |
@@ -141,5 +144,5 @@ await RoiModule.CropToRoiAsync(image, new Size(200, 200), selector, CropType.Fil
 ## Contributors
 
 | [<img src="https://github.com/thnhmai06.png" width="100"><br><sub>**thnhmai06**</sub>](https://github.com/thnhmai06) | [<img src="https://github.com/Hair-Nguyeenx.png" width="100"><br><sub>**Hair-Nguyeenx**</sub>](https://github.com/Hair-Nguyeenx) |
-| :---------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                 <span title="Project Manager">👑 <span title="Developer">💻                                 |                                                        <span title="Developer">💻                                                         |
+| :------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------: |
+|                             <span title="Project Manager">👑 <span title="Developer">💻                              |                                                    <span title="Developer">💻                                                    |
