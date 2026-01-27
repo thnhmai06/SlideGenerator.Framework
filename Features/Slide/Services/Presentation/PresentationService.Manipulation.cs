@@ -1,0 +1,210 @@
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Presentation;
+
+namespace SlideGenerator.Framework.Slide;
+
+public static partial class PresentationService
+{
+    /// <summary>
+    ///     Copies a slide and inserts it at the specified position.
+    /// </summary>
+    /// <param name="doc">The presentation document to modify.</param>
+    /// <param name="sourceRelId">Relationship ID of the slide to copy.</param>
+    /// <param name="position">
+    ///     Position that new slide will have (1-based).
+    ///     If below than 0 or greater than current total slides, appends to end.
+    /// </param>
+    /// <returns>The slide part of the copied slide.</returns>
+    public static SlidePart CloneSlide(PresentationDocument doc, string sourceRelId, int position = -1)
+    {
+        var presentationPart = doc.PresentationPart
+                               ?? throw new InvalidOperationException("PresentationPart is missing.");
+
+        var sourceSlide = (SlidePart?)presentationPart.GetPartById(sourceRelId)
+                          ?? throw new ArgumentException($"Slide with relationship ID '{sourceRelId}' not found.",
+                              nameof(sourceRelId));
+
+        var newSlide = presentationPart.AddNewPart<SlidePart>();
+
+        // clone slide XML (contains transition/timing)
+        newSlide.Slide = (DocumentFormat.OpenXml.Presentation.Slide)sourceSlide.Slide!.CloneNode(true);
+
+        // old rId -> new rId
+        var ridMap = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        // reuse OpenXmlPart (image/layout/chart/...) but re-create relationships (new rId)
+        // avoid copying NotesSlidePart: sharing notes across slides often corrupts package
+        foreach (var rel in sourceSlide.Parts)
+        {
+            if (rel.OpenXmlPart is NotesSlidePart)
+                continue;
+
+            var oldRid = rel.RelationshipId;
+            if (string.IsNullOrWhiteSpace(oldRid))
+                continue;
+
+            var added = newSlide.AddPart(rel.OpenXmlPart);
+            var newRid = newSlide.GetIdOfPart(added);
+
+            ridMap[oldRid] = newRid;
+        }
+
+        // reuse media (video/audio/media) by re-creating relationships and remap rId
+        var unsupportedDataRelIds = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var dpr in sourceSlide.DataPartReferenceRelationships)
+        {
+            var oldRid = dpr.Id; // rId in slide xml
+            if (string.IsNullOrWhiteSpace(oldRid))
+                continue;
+
+            if (dpr.DataPart is MediaDataPart media)
+            {
+                // Create a new relationship (new rId), then remap slide XML to that id
+                var newRid = dpr switch
+                {
+                    VideoReferenceRelationship => newSlide.AddVideoReferenceRelationship(media).Id,
+                    AudioReferenceRelationship => newSlide.AddAudioReferenceRelationship(media).Id,
+                    _ => newSlide.AddMediaReferenceRelationship(media).Id
+                };
+
+                ridMap[oldRid] = newRid;
+            }
+            else
+            {
+                // Other DataPart kinds (OLE/controls/embedded) are not safely addable via public SDK API
+                unsupportedDataRelIds.Add(oldRid);
+            }
+        }
+
+        // external relationships: re-create and remap
+        foreach (var ext in sourceSlide.ExternalRelationships)
+        {
+            var oldRid = ext.Id;
+            if (string.IsNullOrWhiteSpace(oldRid))
+                continue;
+
+            var created = newSlide.AddExternalRelationship(ext.RelationshipType, ext.Uri);
+            ridMap[oldRid] = created.Id;
+        }
+
+        // hyperlink relationships: re-create and remap
+        foreach (var link in sourceSlide.HyperlinkRelationships)
+        {
+            var oldRid = link.Id;
+            if (string.IsNullOrWhiteSpace(oldRid))
+                continue;
+
+            var created = newSlide.AddHyperlinkRelationship(link.Uri, link.IsExternal);
+            ridMap[oldRid] = created.Id;
+        }
+
+        // strip unsupported DataPartReferenceRelationship to avoid dangling rIds -> PowerPoint repair/corrupt
+        if (unsupportedDataRelIds.Count > 0)
+            RemoveElementsReferencingRelIds(newSlide.Slide, unsupportedDataRelIds);
+
+        // rewrite r:id / r:embed / r:link in slide XML to the newly created relationship ids
+        RemapRelIds(newSlide.Slide, ridMap);
+
+        newSlide.Slide.Save();
+
+        // add slide to SlideIdList
+        var slideIdList = presentationPart.Presentation!.SlideIdList!;
+        uint nextId = 256;
+        var hasIds = false;
+        uint maxId = 0;
+        foreach (var slideId in slideIdList.ChildElements.OfType<SlideId>())
+        {
+            var idValue = slideId.Id?.Value;
+            if (!idValue.HasValue) continue;
+            if (!hasIds || idValue.Value > maxId)
+            {
+                maxId = idValue.Value;
+                hasIds = true;
+            }
+        }
+
+        if (hasIds) nextId = maxId + 1;
+
+        var newSlideId = new SlideId
+        {
+            Id = nextId,
+            RelationshipId = presentationPart.GetIdOfPart(newSlide)
+        };
+
+        if (position <= 0 || position > slideIdList.Count())
+            slideIdList.Append(newSlideId);
+        else
+            slideIdList.InsertAt(newSlideId, position - 1);
+
+        presentationPart.Presentation.Save();
+        return newSlide;
+    }
+
+    /// <summary>
+    ///     Removes the slide at the specified position.
+    /// </summary>
+    /// <param name="doc">The presentation document.</param>
+    /// <param name="position">Position of the slide to remove (1-based).</param>
+    public static void RemoveSlide(PresentationDocument doc, int position)
+    {
+        var slideIdList = doc.PresentationPart?.Presentation?.SlideIdList;
+        if (slideIdList == null) return;
+
+        if (position < 1 || position > slideIdList.Count())
+            throw new ArgumentOutOfRangeException(nameof(position), "Position is out of range.");
+
+        var slide = slideIdList.ChildElements.Cast<SlideId>().ElementAt(position - 1);
+        slide?.Remove();
+
+        doc.PresentationPart?.Presentation?.Save();
+    }
+
+    private static void RemapRelIds(OpenXmlElement root, Dictionary<string, string> ridMap)
+    {
+        const string relNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+
+        foreach (var el in root.Descendants())
+        {
+            var attrs = el.GetAttributes();
+            if (attrs.Count == 0) continue;
+
+            var changed = false;
+
+            for (var i = 0; i < attrs.Count; i++)
+            {
+                var a = attrs[i];
+                if (a.NamespaceUri != relNs) continue;
+                if (a.LocalName is not ("id" or "embed" or "link")) continue;
+                if (string.IsNullOrEmpty(a.Value)) continue;
+
+                if (ridMap.TryGetValue(a.Value, out var newRid) &&
+                    !string.Equals(a.Value, newRid, StringComparison.Ordinal))
+                {
+                    attrs[i] = new OpenXmlAttribute(a.Prefix, a.LocalName, a.NamespaceUri, newRid);
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                el.SetAttributes(attrs);
+        }
+    }
+
+    private static void RemoveElementsReferencingRelIds(OpenXmlElement root, HashSet<string> relIds)
+    {
+        // r:id, r:embed, r:link are in namespace relationships
+        const string relNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+
+        var toRemove = root
+            .Descendants()
+            .Where(el => el.GetAttributes().Any(a =>
+                a is { NamespaceUri: relNs, LocalName: "id" or "embed" or "link", Value: not null } &&
+                relIds.Contains(a.Value)))
+            .ToList();
+
+        foreach (var el in toRemove)
+            el.Remove();
+    }
+}

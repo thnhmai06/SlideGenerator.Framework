@@ -3,7 +3,7 @@ using SlideGenerator.Framework.Cloud;
 namespace SlideGenerator.Framework.Tests.Cloud;
 
 [TestClass]
-public class CloudUrlResolverTests
+public class CloudResolverTests
 {
     [TestMethod]
     [DataRow("https://drive.google.com/file/d/1abc123/view", true)]
@@ -13,7 +13,7 @@ public class CloudUrlResolverTests
     public void IsCloudUrlSupported_ReturnsCorrectResult(string url, bool expected)
     {
         // Act
-        var result = CloudUrlResolver.IsCloudUrlSupported(new Uri(url));
+        var result = CloudResolver.Instance.IsUriSupported(new Uri(url));
 
         // Assert
         Assert.AreEqual(expected, result);
@@ -26,10 +26,10 @@ public class CloudUrlResolverTests
         var url = "https://drive.google.com/file/d/1abc123/view";
 
         // Act
-        var result = await CloudUrlResolver.ResolveLinkAsync(url);
+        var result = await CloudResolver.Instance.ResolveLinkAsync(new Uri(url));
 
         // Assert
-        Assert.AreEqual("https://drive.google.com/uc?export=download&id=1abc123", result.ToString());
+        Assert.AreEqual("https://drive.google.com/uc?export=download&id=1abc123", result?.ToString());
     }
 
     [TestMethod]
@@ -40,9 +40,9 @@ public class CloudUrlResolverTests
         // Base64 of "https://1drv.ms/i/s!abc" is aHR0cHM6Ly8xZHJ2Lm1zL2kicyFhYmM
 
         // Act
-        var result = CloudUrlResolver.ResolveLinkAsync(url).GetAwaiter().GetResult();
+        var result = CloudResolver.Instance.ResolveLinkAsync(new Uri(url)).GetAwaiter().GetResult();
 
         // Assert
-        StringAssert.StartsWith(result.ToString(), "https://api.onedrive.com/v1.0/shares/u!");
+        StringAssert.StartsWith(result?.ToString(), "https://api.onedrive.com/v1.0/shares/u!");
     }
 }
