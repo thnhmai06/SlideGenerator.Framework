@@ -1,4 +1,4 @@
-namespace SlideGenerator.Framework.Common;
+namespace SlideGenerator.Framework;
 
 /// <summary>
 ///     Provides lazy asynchronous initialization with thread-safe single execution guarantee and reset capability.
@@ -56,20 +56,7 @@ public sealed class AsyncLazy<T> : IDisposable
     public async Task ResetAsync(Action<T>? disposeAction = null)
     {
         await _lock.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (_instance?.IsValueCreated == true)
-            {
-                var task = _instance.Value;
-                if (task.IsCompletedSuccessfully && disposeAction != null) disposeAction(task.Result);
-            }
-
-            _instance = CreateLazy();
-        }
-        finally
-        {
-            _lock.Release();
-        }
+        Reset(disposeAction);
     }
 
     /// <summary>
