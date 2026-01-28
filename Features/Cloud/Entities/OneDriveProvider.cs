@@ -3,11 +3,13 @@
 namespace SlideGenerator.Framework.Cloud;
 
 /// <summary>
-/// Provides access to OneDrive as a cloud provider, enabling resolution and support checks for OneDrive URLs.
+///     Provides access to OneDrive as a cloud provider, enabling resolution and support checks for OneDrive URLs.
 /// </summary>
-/// <remarks>This class implements the singleton pattern. Use the <see cref="Instance"/> property to access the
-/// shared instance. <see cref="OneDriveProvider"/> supports URLs from both 1drv.ms and onedrive.live.com
-/// domains.</remarks>
+/// <remarks>
+///     This class implements the singleton pattern. Use the <see cref="Instance" /> property to access the
+///     shared instance. <see cref="OneDriveProvider" /> supports URLs from both 1drv.ms and onedrive.live.com
+///     domains.
+/// </remarks>
 public sealed class OneDriveProvider : CloudProvider
 {
     private static readonly Lazy<OneDriveProvider> LazyInstance = new(() => new OneDriveProvider());
