@@ -7,11 +7,13 @@ namespace SlideGenerator.Framework.Slide;
 public static class SpirePresentationService
 {
     /// <summary>
-    /// Opens a Spire Presentation file from the specified path and returns a Presentation instance for further
-    /// manipulation.
+    ///     Opens a Spire Presentation file from the specified path and returns a Presentation instance for further
+    ///     manipulation.
     /// </summary>
-    /// <remarks>If the file is opened in read-only mode, changes to the presentation will not be saved to the
-    /// original file. Ensure that the file is not in use by another process when opening in write mode.</remarks>
+    /// <remarks>
+    ///     If the file is opened in read-only mode, changes to the presentation will not be saved to the
+    ///     original file. Ensure that the file is not in use by another process when opening in write mode.
+    /// </remarks>
     /// <param name="filePath">The full path to the presentation file to open. The file must exist and be accessible.</param>
     /// <param name="readOnly">true to open the file in read-only mode; otherwise, false. Defaults to true.</param>
     /// <returns>A Presentation object representing the opened presentation file.</returns>
@@ -57,16 +59,19 @@ public static class SpirePresentationService
     }
 
     /// <summary>
-    /// Extracts preview images for all slides in the specified presentation.
+    ///     Extracts preview images for all slides in the specified presentation.
     /// </summary>
     /// <remarks>
-    /// Each preview corresponds to a single slide in the order they appear in the presentation. The
-    /// preview image is generated using the slide's current content and formatting.
-    /// Due to limitations in FreeSpire.Presentation, this method can only process presentations with up to first 10 slides.
+    ///     Each preview corresponds to a single slide in the order they appear in the presentation. The
+    ///     preview image is generated using the slide's current content and formatting.
+    ///     Due to limitations in FreeSpire.Presentation, this method can only process presentations with up to first 10
+    ///     slides.
     /// </remarks>
     /// <param name="spirePresentation">The presentation from which to extract slide previews. Cannot be null.</param>
-    /// <returns>A list of <see cref="ObjectPreview"/> instances, each containing the slide ID, name, and a byte array
-    /// representing the preview image for each slide. The list will be empty if the presentation contains no slides.</returns>
+    /// <returns>
+    ///     A list of <see cref="ObjectPreview" /> instances, each containing the slide ID, name, and a byte array
+    ///     representing the preview image for each slide. The list will be empty if the presentation contains no slides.
+    /// </returns>
     public static List<ObjectPreview> ExtractAllSlidesPreviews(Presentation spirePresentation)
     {
         List<ObjectPreview> previews = [];
@@ -77,6 +82,7 @@ public static class SpirePresentationService
             imageStream.CopyTo(ms);
             previews.Add(new ObjectPreview(slide.SlideID, slide.Name, ms.ToArray()));
         }
+
         return previews;
     }
 }
