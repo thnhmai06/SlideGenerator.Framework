@@ -1,5 +1,5 @@
 using ClosedXML.Excel;
-using SlideGenerator.Framework.Sheet.Models;
+using SlideGenerator.Framework.Sheet;
 
 namespace SlideGenerator.Framework.Tests.Sheet;
 
@@ -7,7 +7,7 @@ namespace SlideGenerator.Framework.Tests.Sheet;
 public class WorkbookTests
 {
     [TestMethod]
-    public void Workbook_Constructor_LoadsWorksheetsCorrectly()
+    public void GetSheetsRowCount_ReturnsCorrectRowCounts()
     {
         // Arrange
         using var xlWorkbook = new XLWorkbook();
@@ -19,35 +19,14 @@ public class WorkbookTests
         sheet2.Cell(1, 1).Value = "Test";
 
         // Act
-        using var workbook = new Workbook(xlWorkbook);
+        var result = WorkbookService.GetSheetsRowCount(xlWorkbook);
 
         // Assert
-        Assert.HasCount(2, workbook.Worksheets);
-        Assert.IsTrue(workbook.Worksheets.ContainsKey("Sheet1"));
-        Assert.IsTrue(workbook.Worksheets.ContainsKey("Sheet2"));
-
-        var ws1 = workbook.Worksheets["Sheet1"];
-        Assert.AreEqual(1, ws1.RowCount); // Header (1) + Data (2) -> Max(2) - Min(1) = 1 row of data
-    }
-
-    [TestMethod]
-    public void GetWorksheetsInfo_ReturnsCorrectRowCounts()
-    {
-        // Arrange
-        using var xlWorkbook = new XLWorkbook();
-        var sheet = xlWorkbook.Worksheets.Add("DataSheet");
-        sheet.Cell(1, 1).Value = "H1";
-        sheet.Cell(2, 1).Value = "V1";
-        sheet.Cell(3, 1).Value = "V2";
-
-        using var workbook = new Workbook(xlWorkbook);
-
-        // Act
-        var info = workbook.GetWorksheetsInfo();
-
-        // Assert
-        Assert.HasCount(1, info);
-        Assert.IsTrue(info.ContainsKey("DataSheet"));
-        Assert.AreEqual(2, info["DataSheet"]); // Header (1) + V1(2) + V2(3) -> Max(3) - Min(1) = 2
+        Assert.AreEqual(2, result.Count);
+        Assert.IsTrue(result.ContainsKey("Sheet1"));
+        Assert.IsTrue(result.ContainsKey("Sheet2"));
+        
+        Assert.AreEqual(1, result["Sheet1"]); // Header (1) + Data (2) -> Max(2) - Min(1) = 1 row of data
+        Assert.AreEqual(0, result["Sheet2"]); // Only Header
     }
 }

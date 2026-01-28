@@ -68,7 +68,7 @@ public class TextReplacerTests
             var replacements = new Dictionary<string, string> { { "Name", "World" } };
 
             // Act
-            var (count, _) = await TextReplacer.ReplaceAsync(slidePart, replacements);
+            var (count, _) = await TextReplacer.ReplaceTextAsync(slidePart, replacements);
 
             // Assert
             Assert.AreEqual((uint)1, count);

@@ -1,5 +1,5 @@
 using System.Drawing;
-using SlideGenerator.Framework.Image.Utilities;
+using SlideGenerator.Framework.Image;
 
 namespace SlideGenerator.Framework.Tests.Image;
 
@@ -14,7 +14,7 @@ public class ImageUtilitiesTests
         var target = new Size(1600, 900); // 16:9
 
         // Act
-        var result = ImageUtilities.GetMaxAspectSize(original, target);
+        var result = ManipulatingService.GetMaxAspectSize(original, target);
 
         // Assert
         Assert.AreEqual(1000, result.Width);
@@ -29,7 +29,7 @@ public class ImageUtilitiesTests
         var target = new Size(900, 1600); // 9:16
 
         // Act
-        var result = ImageUtilities.GetMaxAspectSize(original, target);
+        var result = ManipulatingService.GetMaxAspectSize(original, target);
 
         // Assert
         Assert.AreEqual(562, result.Width); // 1000 * 9 / 16 = 562.5 -> ToEven = 562
