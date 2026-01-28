@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Slide;
 
-public static partial class PresentationService
+public static partial class PresentationDocumentService
 {
     /// <summary>
     ///     Copies a slide and inserts it at the specified position.

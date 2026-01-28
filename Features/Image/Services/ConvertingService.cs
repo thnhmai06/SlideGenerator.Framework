@@ -45,7 +45,7 @@ public static class ConvertingService
     /// </param>
     /// <param name="parameters">Optional encoding parameters as key-value pairs.</param>
     /// <returns>A byte array containing the encoded image data in the specified format.</returns>
-    public static byte[] ConvertMatToBytes(Mat mat, string ext = ".png",
+    public static byte[] ConvertMatToImage(Mat mat, string ext = ".png",
         params KeyValuePair<ImwriteFlags, int>[] parameters)
     {
         using var buffer = new VectorOfByte();

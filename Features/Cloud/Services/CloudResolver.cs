@@ -1,8 +1,12 @@
 namespace SlideGenerator.Framework.Cloud;
 
 /// <summary>
-///     Provides URL resolution for cloud storage services.
+/// Provides a singleton service for resolving URIs using a set of supported cloud providers.
 /// </summary>
+/// <remarks><see cref="CloudResolver"/> maintains a collection of cloud providers and delegates URI resolution to the
+/// appropriate provider based on the input URI. The set of providers can be accessed and modified through the Providers
+/// property. This class is thread-safe for read operations, but modifications to the Providers collection should be
+/// synchronized if accessed concurrently.</remarks>
 public sealed class CloudResolver
 {
     private static readonly Lazy<CloudResolver> LazyInstance = new(() => new CloudResolver());
