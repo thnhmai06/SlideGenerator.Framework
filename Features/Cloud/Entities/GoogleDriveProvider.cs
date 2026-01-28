@@ -3,6 +3,13 @@ using System.Web;
 
 namespace SlideGenerator.Framework.Cloud;
 
+/// <summary>
+/// Provides a cloud provider implementation for accessing and resolving Google Drive file and folder URIs.
+/// </summary>
+/// <remarks>Use this class to interact with Google Drive resources in a standardized way within the application.
+/// The provider supports resolving direct download links for files and the first file in a folder, given a supported
+/// Google Drive URI. This class is implemented as a singleton; use the <see cref="Instance"/> property to access the
+/// shared instance.</remarks>
 public sealed partial class GoogleDriveProvider : CloudProvider
 {
     private static readonly Regex GoogleDriveFileIdPattern = GoogleDriveFileIdRegex();

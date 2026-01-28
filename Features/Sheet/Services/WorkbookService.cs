@@ -8,6 +8,25 @@ namespace SlideGenerator.Framework.Sheet;
 public static class WorkbookService
 {
     /// <summary>
+    /// Opens an Excel workbook from the specified file path.
+    /// </summary>
+    /// <remarks>The caller is responsible for disposing the returned <see cref="IXLWorkbook"/> when it is no longer needed.
+    /// If the file is opened in read-only mode, changes to the workbook will not be saved to the original
+    /// file.</remarks>
+    /// <param name="filePath">The full path to the Excel file to open. The file must exist and be accessible.</param>
+    /// <param name="readOnly">true to open the workbook in read-only mode; otherwise, false. The default is true.</param>
+    /// <returns>An <see cref="IXLWorkbook"/> instance representing the opened Excel workbook.</returns>
+    public static IXLWorkbook OpenWorkbook(string filePath, bool readOnly = true)
+    {
+        using var fs = new FileStream(
+            filePath, FileMode.Open, 
+            readOnly ? FileAccess.ReadWrite : FileAccess.Read, 
+            readOnly ? FileShare.ReadWrite : FileShare.Read);
+        var workbook = new XLWorkbook(fs);
+        return workbook;
+    }
+
+    /// <summary>
     ///     Retrieves the title of the specified workbook, if one is set.
     /// </summary>
     /// <param name="workbook">The workbook from which to obtain the title. Cannot be null.</param>
