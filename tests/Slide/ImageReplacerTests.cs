@@ -41,7 +41,7 @@ public class ImageReplacerTests
         );
 
         // Act
-        var size = ImageReplacer.GetPictureSize(picture);
+        var size = SlideService.GetPictureSize(picture);
 
         // Assert
         Assert.AreEqual(100, size.Width);
@@ -70,7 +70,7 @@ public class ImageReplacerTests
         );
 
         // Act
-        var size = ImageReplacer.GetShapeSize(shape);
+        var size = SlideService.GetShapeSize(shape);
 
         // Assert
         Assert.AreEqual(200, size.Width);
