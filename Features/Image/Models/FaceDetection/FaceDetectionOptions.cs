@@ -1,4 +1,4 @@
-﻿namespace SlideGenerator.Framework.Image.FaceDetection;
+﻿namespace SlideGenerator.Framework.Image.Models.FaceDetection;
 
 /// <summary>
 ///     Face detection options for ROI selection.

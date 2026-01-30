@@ -1,6 +1,6 @@
 ﻿using ClosedXML.Excel;
 
-namespace SlideGenerator.Framework.Sheet;
+namespace SlideGenerator.Framework.Sheet.Services;
 
 /// <summary>
 ///     Provides services for working with workbooks (Excel files).

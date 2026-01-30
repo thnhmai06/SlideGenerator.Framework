@@ -1,8 +1,10 @@
 using System.Drawing;
 using Emgu.CV;
-using SlideGenerator.Framework.Image.FaceDetection;
+using SlideGenerator.Framework.Image.Entities.FaceDetection;
+using SlideGenerator.Framework.Image.Models.Roi;
+using SlideGenerator.Framework.Image.Services;
 
-namespace SlideGenerator.Framework.Image.Roi;
+namespace SlideGenerator.Framework.Image.Entities.Roi;
 
 public sealed class RuleOfThirdsRoi : RoiCalculator
 {

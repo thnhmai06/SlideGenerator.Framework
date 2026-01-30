@@ -1,6 +1,7 @@
 using Emgu.CV;
+using SlideGenerator.Framework.Image.Models.FaceDetection;
 
-namespace SlideGenerator.Framework.Image.FaceDetection;
+namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     A face detector model.

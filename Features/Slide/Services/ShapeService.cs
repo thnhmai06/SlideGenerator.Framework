@@ -2,7 +2,7 @@ using System.Drawing;
 using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 
-namespace SlideGenerator.Framework.Slide;
+namespace SlideGenerator.Framework.Slide.Services;
 
 public static class ShapeService
 {

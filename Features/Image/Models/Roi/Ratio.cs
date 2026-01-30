@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
-namespace SlideGenerator.Framework.Image.Roi;
+namespace SlideGenerator.Framework.Image.Models.Roi;
 
 /// <summary>
 ///     Represents ratios of a rectangle.
