@@ -1,15 +1,12 @@
-﻿using SlideGenerator.Framework.Image.FaceDetection;
-
-namespace SlideGenerator.Framework.Image.Roi;
+﻿namespace SlideGenerator.Framework.Image.Models.Roi;
 
 /// <summary>
 ///     Specifies options for configuring region-of-interest (ROI) selection in face and saliency detection scenarios.
 /// </summary>
 public sealed record RoiOptions
 {
-    public FaceDetectionOptions FaceDetection = new();
-    public ProminentOptions Prominent = new();
-    public RuleOfThirdsOptions RuleOfThirds = new();
+    public readonly ProminentOptions Prominent = new();
+    public readonly RuleOfThirdsOptions RuleOfThirds = new();
 
     /// <summary>
     ///     Saliency detection options for ROI selection.

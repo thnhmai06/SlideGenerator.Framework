@@ -2,7 +2,7 @@ using System.Drawing;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 
-namespace SlideGenerator.Framework.Image;
+namespace SlideGenerator.Framework.Image.Services;
 
 /// <summary>
 ///     Provides static methods for manipulating images and geometric shapes, including cropping, resizing, and clamping

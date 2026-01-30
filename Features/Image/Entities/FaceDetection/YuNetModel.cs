@@ -3,7 +3,7 @@ using System.Drawing;
 using Emgu.CV;
 using Emgu.CV.Models;
 
-namespace SlideGenerator.Framework.Image.FaceDetection;
+namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     Asynchronous wrapper for <see cref="FaceDetectorYNModel" />.

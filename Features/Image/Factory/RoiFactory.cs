@@ -1,7 +1,8 @@
-using SlideGenerator.Framework.Image.FaceDetection;
-using SlideGenerator.Framework.Image.Roi;
+using SlideGenerator.Framework.Image.Entities.FaceDetection;
+using SlideGenerator.Framework.Image.Entities.Roi;
+using SlideGenerator.Framework.Image.Models.Roi;
 
-namespace SlideGenerator.Framework.Image;
+namespace SlideGenerator.Framework.Image.Factory;
 
 /// <summary>
 ///     Region of Interest (ROI) selection functionality.

@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace SlideGenerator.Framework.Image.FaceDetection;
+namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     Represents a face with its bounding box, score, and eye landmarks (if available).

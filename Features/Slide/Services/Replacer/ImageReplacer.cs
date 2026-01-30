@@ -3,7 +3,7 @@ using DocumentFormat.OpenXml.Packaging;
 using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 
-namespace SlideGenerator.Framework.Slide.Replacer;
+namespace SlideGenerator.Framework.Slide.Services;
 
 /// <summary>
 ///     Provides image replacement functionality for slides.

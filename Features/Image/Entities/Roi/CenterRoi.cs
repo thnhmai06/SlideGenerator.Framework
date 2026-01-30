@@ -1,7 +1,7 @@
 using System.Drawing;
 using Emgu.CV;
 
-namespace SlideGenerator.Framework.Image.Roi;
+namespace SlideGenerator.Framework.Image.Entities.Roi;
 
 public sealed class CenterRoi : RoiCalculator
 {

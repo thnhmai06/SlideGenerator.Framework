@@ -3,7 +3,7 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Saliency;
 
-namespace SlideGenerator.Framework.Image;
+namespace SlideGenerator.Framework.Image.Services;
 
 /// <summary>
 ///     Provides static methods for computing image saliency maps and determining the visual center of shapes within

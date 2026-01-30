@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SlideGenerator.Framework.Cloud;
+namespace SlideGenerator.Framework.Cloud.Entities;
 
 /// <summary>
 ///     Provides access to OneDrive as a cloud provider, enabling resolution and support checks for OneDrive URLs.

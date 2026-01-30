@@ -1,4 +1,6 @@
-namespace SlideGenerator.Framework.Cloud;
+using SlideGenerator.Framework.Cloud.Entities;
+
+namespace SlideGenerator.Framework.Cloud.Services;
 
 /// <summary>
 ///     Provides a singleton service for resolving URIs using a set of supported cloud providers.
@@ -29,8 +31,8 @@ public sealed class CloudResolver
     /// </remarks>
     public HashSet<CloudProvider> Providers { get; } =
     [
-        GoogleDriveProvider.Instance,
-        GooglePhotosProvider.Instance,
+        Entities.GoogleDriveProvider.Instance,
+        Entities.GooglePhotosProvider.Instance,
         OneDriveProvider.Instance
     ];
 

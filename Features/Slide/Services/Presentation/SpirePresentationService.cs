@@ -2,7 +2,7 @@ using SlideGenerator.Framework.Slide.Models;
 using Spire.Presentation;
 using Spire.Presentation.Drawing;
 
-namespace SlideGenerator.Framework.Slide;
+namespace SlideGenerator.Framework.Slide.Services;
 
 public static class SpirePresentationService
 {

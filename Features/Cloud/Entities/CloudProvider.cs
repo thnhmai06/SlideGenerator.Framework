@@ -1,4 +1,4 @@
-﻿namespace SlideGenerator.Framework.Cloud;
+﻿namespace SlideGenerator.Framework.Cloud.Entities;
 
 /// <summary>
 ///     Provides an abstraction for cloud service providers that can resolve and validate URIs using custom logic.

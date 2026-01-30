@@ -4,7 +4,7 @@ using Emgu.CV.CvEnum;
 using Emgu.CV.Util;
 using ImageMagick;
 
-namespace SlideGenerator.Framework.Image;
+namespace SlideGenerator.Framework.Image.Services;
 
 public static class ConvertingService
 {
