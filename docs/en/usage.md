@@ -132,35 +132,24 @@ Advanced image processing using EmguCV.
 ### Face Detection & Smart Cropping
 
 ```csharp
-using SlideGenerator.Framework.Image.Models;
-using SlideGenerator.Framework.Image.Modules.FaceDetection.Models;
-using SlideGenerator.Framework.Image.Modules.Roi;
-using SlideGenerator.Framework.Image.Modules.Roi.Configs;
-using SlideGenerator.Framework.Image.Modules.Roi.Enums;
+using Emgu.CV;
+using SlideGenerator.Framework.Image.Entities.FaceDetection;
 
-// 1. Initialize the Face Detector (YuNet)
+// 1. Create and initialize the face detector model
 using var faceModel = new YuNetModel();
-// Note: Model loading is async internal logic, usually happens on first use
+if (!await faceModel.InitAsync())
+    throw new InvalidOperationException("Failed to initialize YuNet model.");
 
-// 2. Configure ROI (Region of Interest) Module
-var roiOptions = new RoiOptions { SaliencyPadding = 0.1f };
-var roiModule = new RoiModule(roiOptions)
-{
-    FaceDetectionModel = faceModel
-};
+// 2. Load image
+using var mat = CvInvoke.Imread("input.jpg");
 
-// 3. Load Image
-using var image = new Image("input.jpg");
+// 3. Detect faces
+// DetectAsync throws InvalidOperationException if the model was not initialized.
+// It returns all detections; score filtering is done by caller.
+var faces = await faceModel.DetectAsync(mat);
 
-// 4. Select ROI Strategy (e.g., Focus on Face, or Rule of Thirds)
-var selector = roiModule.GetRoiSelector(RoiType.Face);
-
-// 5. Crop
-// Crops the image to 500x500, focusing on the detected face
-await RoiModule.CropToRoiAsync(image, new Size(500, 500), selector, CropType.Fill);
-
-// 6. Save or use the modified image
-image.Save("cropped.jpg");
+// 4. Optional filtering at application layer
+var filteredFaces = faces.Where(face => face.Score >= 0.7f).ToList();
 ```
 
 **Note:** Ensure the correct EmguCV runtime is installed for your OS.

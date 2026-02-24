@@ -1,4 +1,5 @@
 using System.Drawing;
+using DocumentFormat.OpenXml.Packaging;
 using Picture = DocumentFormat.OpenXml.Presentation.Picture;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 
@@ -6,6 +7,51 @@ namespace SlideGenerator.Framework.Slide.Services;
 
 public static class ShapeService
 {
+    /// <summary>
+    ///     Finds a picture element in a slide by shape id.
+    /// </summary>
+    /// <param name="slidePart">The slide part to search.</param>
+    /// <param name="shapeId">Target shape id.</param>
+    /// <returns>The matching picture if found; otherwise <see langword="null" />.</returns>
+    public static Picture? FindPictureById(SlidePart slidePart, uint shapeId)
+    {
+        var slide = slidePart.Slide;
+        return slide?.Descendants<Picture>()
+            .FirstOrDefault(p => p.NonVisualPictureProperties?.NonVisualDrawingProperties?.Id?.Value == shapeId);
+    }
+
+    /// <summary>
+    ///     Finds a shape element in a slide by shape id.
+    /// </summary>
+    /// <param name="slidePart">The slide part to search.</param>
+    /// <param name="shapeId">Target shape id.</param>
+    /// <returns>The matching shape if found; otherwise <see langword="null" />.</returns>
+    public static Shape? FindShapeById(SlidePart slidePart, uint shapeId)
+    {
+        var slide = slidePart.Slide;
+        return slide?.Descendants<Shape>()
+            .FirstOrDefault(s => s.NonVisualShapeProperties?.NonVisualDrawingProperties?.Id?.Value == shapeId);
+    }
+
+    /// <summary>
+    ///     Gets all distinct image-capable shape ids in a slide.
+    /// </summary>
+    /// <param name="slidePart">The slide part to inspect.</param>
+    /// <returns>Distinct ordered ids of picture shapes.</returns>
+    public static IReadOnlyList<uint> GetImageShapeIds(SlidePart slidePart)
+    {
+        var slide = slidePart.Slide;
+        if (slide == null) return [];
+
+        return slide.Descendants<Picture>()
+            .Select(GetId)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .OrderBy(id => id)
+            .ToList();
+    }
+
     /// <summary>
     ///     Gets the size of a shape in pixels.
     /// </summary>
