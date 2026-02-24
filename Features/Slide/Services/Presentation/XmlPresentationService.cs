@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
-public static partial class PresentationDocumentService
+public static partial class XmlPresentationService
 {
     /// <summary>
     ///     Opens an existing presentation document or creates a new one if the specified file does not exist.
@@ -23,11 +23,11 @@ public static partial class PresentationDocumentService
     ///     created.
     /// </param>
     /// <returns>A PresentationDocument representing the opened or newly created presentation.</returns>
-    public static PresentationDocument OpenPresentationDocument(string filePath, bool isEditable = true)
+    public static PresentationDocument OpenOrCreatePresentation(string filePath, bool isEditable = true)
     {
-        return !Path.Exists(filePath)
-            ? PresentationDocument.Create(filePath, PresentationDocumentType.Presentation)
-            : PresentationDocument.Open(filePath, isEditable);
+        return Path.Exists(filePath)
+            ? PresentationDocument.Open(filePath, isEditable)
+            : PresentationDocument.Create(filePath, PresentationDocumentType.Presentation);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public static partial class PresentationDocumentService
     ///     A <see cref="PresentationDocument" /> instance representing the newly created presentation based on the
     ///     template.
     /// </returns>
-    public static PresentationDocument OpenPresentationDocumentFromTemplate(string filePath)
+    public static PresentationDocument OpenPresentationFromTemplate(string filePath)
     {
         return PresentationDocument.CreateFromTemplate(filePath);
     }
@@ -57,5 +57,24 @@ public static partial class PresentationDocumentService
         var slideIdList = doc.PresentationPart?.Presentation?.SlideIdList;
         var slideIds = slideIdList?.ChildElements;
         return (SlideId?)slideIds?[index];
+    }
+
+    /// <summary>
+    ///     Enumerates slide parts in display order.
+    /// </summary>
+    /// <param name="doc">The presentation document.</param>
+    /// <returns>Ordered sequence of slide parts.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when presentation structure is invalid.</exception>
+    public static IEnumerable<SlidePart> EnumerateSlides(PresentationDocument doc)
+    {
+        var presentationPart = doc.PresentationPart
+                               ?? throw new InvalidOperationException("Invalid presentation: missing presentation part.");
+        var presentation = presentationPart.Presentation
+                           ?? throw new InvalidOperationException("Invalid presentation: missing root presentation.");
+        var slideIdList = presentation.SlideIdList
+                          ?? throw new InvalidOperationException("Invalid presentation: missing slide list.");
+
+        foreach (var slideId in slideIdList.Elements<SlideId>())
+            yield return (SlidePart)presentationPart.GetPartById(slideId.RelationshipId!);
     }
 }

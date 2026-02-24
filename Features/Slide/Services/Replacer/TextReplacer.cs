@@ -72,6 +72,21 @@ public static partial class TextReplacer
         return result;
     }
 
+    /// <summary>
+    ///     Gets all distinct placeholders found in a slide.
+    /// </summary>
+    /// <param name="slidePart">The slide part to inspect.</param>
+    /// <returns>Distinct placeholders ordered case-insensitively.</returns>
+    public static IReadOnlyList<string> GetUniquePlaceholders(SlidePart slidePart)
+    {
+        return ScanPlaceholders(slidePart)
+            .Select(scan => scan.Placeholder)
+            .Where(placeholder => !string.IsNullOrWhiteSpace(placeholder))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(value => value, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     ///
     public static async Task<List<(Shape Shape, string Old, string New)>>
         ReplaceTextAsync(SlidePart slidePart, ReplaceInstructions instructions)
@@ -86,29 +101,29 @@ public static partial class TextReplacer
 
         foreach (var shape in targetShapes)
             // for follow paragraph to save Bullet point
-        foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
-        {
-            var runs = paragraph.Descendants<Run>().ToList();
-            if (runs.Count == 0) continue;
+            foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
+            {
+                var runs = paragraph.Descendants<Run>().ToList();
+                if (runs.Count == 0) continue;
 
-            var builder = new StringBuilder();
-            foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
-            var originalText = builder.ToString();
+                var builder = new StringBuilder();
+                foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
+                var originalText = builder.ToString();
 
-            var newText = await RenderSafeAsync(Stubble, originalText, sanitized);
-            if (newText == originalText) continue;
-            var keysInPara = ScanPlaceholders(originalText);
-            foreach (var key in keysInPara)
-                if (instructions.TryGetValue(key, out var val))
-                    changeLog.Add((shape, key, val));
+                var newText = await RenderSafeAsync(Stubble, originalText, sanitized);
+                if (newText == originalText) continue;
+                var keysInPara = ScanPlaceholders(originalText);
+                foreach (var key in keysInPara)
+                    if (instructions.TryGetValue(key, out var val))
+                        changeLog.Add((shape, key, val));
 
-            runs[0].Text ??= new Text();
-            runs[0].Text!.Text = newText;
+                runs[0].Text ??= new Text();
+                runs[0].Text!.Text = newText;
 
-            for (var i = 1; i < runs.Count; i++)
-                if (runs[i].Text != null)
-                    runs[i].Text!.Text = string.Empty;
-        }
+                for (var i = 1; i < runs.Count; i++)
+                    if (runs[i].Text != null)
+                        runs[i].Text!.Text = string.Empty;
+            }
 
         return changeLog;
     }

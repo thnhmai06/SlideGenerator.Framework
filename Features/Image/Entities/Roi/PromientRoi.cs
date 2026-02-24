@@ -7,7 +7,7 @@ namespace SlideGenerator.Framework.Image.Entities.Roi;
 
 public sealed class ProminentRoi : RoiCalculator
 {
-    public RoiOptions.ProminentOptions Options { get; init; } = new();
+    public ProminentOptions Options { get; init; } = new();
 
     /// <summary>
     ///     Finds a prominent ROI using saliency and returns a crop rectangle within image bounds.

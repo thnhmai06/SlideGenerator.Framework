@@ -114,17 +114,18 @@ working.Save();
 Intelligent cropping based on Region of Interest (ROI).
 
 ```csharp
-using SlideGenerator.Framework.Image.Models;
-using SlideGenerator.Framework.Image.Modules.Roi;
+using Emgu.CV;
+using SlideGenerator.Framework.Image.Entities.FaceDetection;
 
-using var image = new Image("photo.png");
-using var faceModel = new YuNetModel(); // Pre-trained face detector
+var mat = CvInvoke.Imread("photo.png");
+using var faceModel = new YuNetModel();
 
-var roiModule = new RoiModule(new RoiOptions { FaceDetectionModel = faceModel });
-var selector = roiModule.GetRoiSelector(RoiType.Face);
+if (!await faceModel.InitAsync())
+  throw new InvalidOperationException("Failed to initialize YuNet model.");
 
-// Crop image focusing on the face
-await RoiModule.CropToRoiAsync(image, new Size(200, 200), selector, CropType.Fill);
+// Framework returns all detections; filter by score at caller side if needed.
+var faces = await faceModel.DetectAsync(mat);
+var strongFaces = faces.Where(face => face.Score >= 0.7f).ToList();
 ```
 
 ## Star History

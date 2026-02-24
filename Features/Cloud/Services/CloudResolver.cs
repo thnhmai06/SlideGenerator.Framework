@@ -31,8 +31,8 @@ public sealed class CloudResolver
     /// </remarks>
     public HashSet<CloudProvider> Providers { get; } =
     [
-        Entities.GoogleDriveProvider.Instance,
-        Entities.GooglePhotosProvider.Instance,
+        GoogleDriveProvider.Instance,
+        GooglePhotosProvider.Instance,
         OneDriveProvider.Instance
     ];
 

@@ -132,35 +132,24 @@ Xử lý ảnh nâng cao sử dụng EmguCV.
 ### Nhận diện khuôn mặt & Cắt thông minh
 
 ```csharp
-using SlideGenerator.Framework.Image.Models;
-using SlideGenerator.Framework.Image.Modules.FaceDetection.Models;
-using SlideGenerator.Framework.Image.Modules.Roi;
-using SlideGenerator.Framework.Image.Modules.Roi.Configs;
-using SlideGenerator.Framework.Image.Modules.Roi.Enums;
+using Emgu.CV;
+using SlideGenerator.Framework.Image.Entities.FaceDetection;
 
-// 1. Khởi tạo Face Detector (YuNet)
+// 1. Tạo và khởi tạo model nhận diện khuôn mặt
 using var faceModel = new YuNetModel();
-// Lưu ý: Model loading là logic nội bộ bất đồng bộ, thường diễn ra ở lần dùng đầu tiên
+if (!await faceModel.InitAsync())
+    throw new InvalidOperationException("Khởi tạo model YuNet thất bại.");
 
-// 2. Cấu hình Module ROI (Region of Interest)
-var roiOptions = new RoiOptions { SaliencyPadding = 0.1f };
-var roiModule = new RoiModule(roiOptions)
-{
-    FaceDetectionModel = faceModel
-};
+// 2. Tải ảnh
+using var mat = CvInvoke.Imread("input.jpg");
 
-// 3. Tải ảnh
-using var image = new Image("input.jpg");
+// 3. Nhận diện khuôn mặt
+// DetectAsync sẽ throw InvalidOperationException nếu model chưa được khởi tạo.
+// Framework trả về toàn bộ kết quả detect; lọc score do caller tự xử lý.
+var faces = await faceModel.DetectAsync(mat);
 
-// 4. Chọn chiến lược ROI (ví dụ: Tập trung vào khuôn mặt, hoặc Quy tắc 1/3)
-var selector = roiModule.GetRoiSelector(RoiType.Face);
-
-// 5. Cắt ảnh
-// Cắt ảnh về kích thước 500x500, tập trung vào khuôn mặt đã phát hiện
-await RoiModule.CropToRoiAsync(image, new Size(500, 500), selector, CropType.Fill);
-
-// 6. Lưu hoặc sử dụng ảnh đã chỉnh sửa
-image.Save("cropped.jpg");
+// 4. Lọc theo nghiệp vụ ở tầng ứng dụng (tùy chọn)
+var filteredFaces = faces.Where(face => face.Score >= 0.7f).ToList();
 ```
 
 **Lưu ý:** Đảm bảo rằng runtime EmguCV chính xác đã được cài đặt cho hệ điều hành của bạn.

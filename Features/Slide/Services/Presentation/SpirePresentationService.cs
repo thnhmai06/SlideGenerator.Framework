@@ -1,6 +1,9 @@
 using SlideGenerator.Framework.Slide.Models;
 using Spire.Presentation;
 using Spire.Presentation.Drawing;
+using SlidePicture = Spire.Presentation.SlidePicture;
+using SpirePresentation = Spire.Presentation.Presentation;
+using SpireFileFormat = Spire.Presentation.FileFormat;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
@@ -17,13 +20,13 @@ public static class SpirePresentationService
     /// <param name="filePath">The full path to the presentation file to open. The file must exist and be accessible.</param>
     /// <param name="readOnly">true to open the file in read-only mode; otherwise, false. Defaults to true.</param>
     /// <returns>A Presentation object representing the opened presentation file.</returns>
-    public static Presentation OpenSpirePresentation(string filePath, bool readOnly = true)
+    public static SpirePresentation OpenSpirePresentation(string filePath, bool readOnly = true)
     {
         using var fs = new FileStream(
             filePath, FileMode.Open,
             readOnly ? FileAccess.ReadWrite : FileAccess.Read,
             readOnly ? FileShare.ReadWrite : FileShare.Read);
-        return new Presentation(fs, FileFormat.Auto);
+        return new SpirePresentation(fs, SpireFileFormat.Auto);
     }
 
     /// <summary>
@@ -38,7 +41,7 @@ public static class SpirePresentationService
     ///     FreeSpire.Presentation limitations.
     /// </param>
     /// <returns>A dictionary mapping shape IDs to shape image info.</returns>
-    public static Dictionary<uint, ObjectPreview> ExtractAllImageShapes(Presentation spirePresentation,
+    public static Dictionary<uint, ObjectPreview> ExtractAllImageShapes(SpirePresentation spirePresentation,
         int index = 1)
     {
         if (spirePresentation.Slides.Count == 0) return [];
@@ -72,7 +75,7 @@ public static class SpirePresentationService
     ///     A list of <see cref="ObjectPreview" /> instances, each containing the slide ID, name, and a byte array
     ///     representing the preview image for each slide. The list will be empty if the presentation contains no slides.
     /// </returns>
-    public static List<ObjectPreview> ExtractAllSlidesPreviews(Presentation spirePresentation)
+    public static List<ObjectPreview> ExtractAllSlidesPreviews(SpirePresentation spirePresentation)
     {
         List<ObjectPreview> previews = [];
         foreach (var slide in spirePresentation.Slides.ToArray())

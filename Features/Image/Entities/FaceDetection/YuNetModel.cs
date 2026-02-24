@@ -64,14 +64,20 @@ public sealed class YuNetModel : FaceDetectorModel
         }
     }
 
+    /// <summary>
+    ///     Detects faces from the provided mat using initialized YuNet model instance.
+    /// </summary>
+    /// <param name="mat">Input mat to run detection on.</param>
+    /// <returns>All faces detected by the model without score filtering.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the model has not been initialized.</exception>
     public override async Task<List<Face>> DetectAsync(Mat mat)
     {
         var faces = new List<Face>();
 
         if (mat.IsEmpty) return faces;
 
-        // Init face model on first use
-        if (!await InitAsync().ConfigureAwait(false)) return faces;
+        if (!IsModelAvailable)
+            throw new InvalidOperationException("The model is not initialized.");
 
         using var raw = new Mat();
         await DetectLock.WaitAsync().ConfigureAwait(false);
@@ -106,7 +112,6 @@ public sealed class YuNetModel : FaceDetectorModel
             {
                 var i = r * cols;
                 var score = buf[i + 14];
-                if (score < Options.Confidence) continue;
 
                 var x = (int)MathF.Round(buf[i + 0]);
                 var y = (int)MathF.Round(buf[i + 1]);

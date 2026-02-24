@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
-public static partial class PresentationDocumentService
+public static partial class XmlPresentationService
 {
     /// <summary>
     ///     Copies a slide and inserts it at the specified position.
@@ -19,10 +19,10 @@ public static partial class PresentationDocumentService
     public static SlidePart CloneSlide(PresentationDocument doc, string sourceRelId, int position = -1)
     {
         var presentationPart = doc.PresentationPart
-                               ?? throw new InvalidOperationException("PresentationPart is missing.");
+                               ?? throw new InvalidOperationException("Invalid presentation: missing presentation part.");
 
         var sourceSlide = (SlidePart?)presentationPart.GetPartById(sourceRelId)
-                          ?? throw new ArgumentException($"Slide with relationship ID '{sourceRelId}' not found.",
+                          ?? throw new ArgumentException($"Invalid slide: slide with relationship ID '{sourceRelId}' not found.",
                               nameof(sourceRelId));
 
         var newSlide = presentationPart.AddNewPart<SlidePart>();

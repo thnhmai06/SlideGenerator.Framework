@@ -9,7 +9,7 @@ namespace SlideGenerator.Framework.Image.Entities.Roi;
 public sealed class RuleOfThirdsRoi : RoiCalculator
 {
     public required FaceDetectorModel FaceDetectorModel { get; init; }
-    public RoiOptions.RuleOfThirdsOptions Options { get; init; } = new();
+    public RuleOfThirdsOptions Options { get; init; } = new();
 
     public override async ValueTask<Rectangle> CalculateRoiAsync(Mat mat, Size targetSize)
     {
