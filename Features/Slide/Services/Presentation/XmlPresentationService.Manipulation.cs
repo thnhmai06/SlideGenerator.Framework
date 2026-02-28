@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:16:48 GMT+7
 public static partial class XmlPresentationService
 {
     /// <summary>
@@ -19,10 +20,12 @@ public static partial class XmlPresentationService
     public static SlidePart CloneSlide(PresentationDocument doc, string sourceRelId, int position = -1)
     {
         var presentationPart = doc.PresentationPart
-                               ?? throw new InvalidOperationException("Invalid presentation: missing presentation part.");
+                               ?? throw new InvalidOperationException(
+                                   "Invalid presentation: missing presentation part.");
 
         var sourceSlide = (SlidePart?)presentationPart.GetPartById(sourceRelId)
-                          ?? throw new ArgumentException($"Invalid slide: slide with relationship ID '{sourceRelId}' not found.",
+                          ?? throw new ArgumentException(
+                              $"Invalid slide: slide with relationship ID '{sourceRelId}' not found.",
                               nameof(sourceRelId));
 
         var newSlide = presentationPart.AddNewPart<SlidePart>();

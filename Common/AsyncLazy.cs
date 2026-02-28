@@ -4,6 +4,10 @@ namespace SlideGenerator.Framework;
 ///     Provides lazy asynchronous initialization with thread-safe single execution guarantee and reset capability.
 /// </summary>
 /// <typeparam name="T">The type of object being lazily initialized.</typeparam>
+/// ///
+/// <remarks>
+///     Reviewed by @thnhmai06 at 01/03/2026 00:59:20 GMT+7
+/// </remarks>
 public sealed class AsyncLazy<T> : IDisposable
 {
     private readonly Func<Task<T>> _factory;

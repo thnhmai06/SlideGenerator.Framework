@@ -1,13 +1,19 @@
 using System.Drawing;
 using Emgu.CV;
-using SlideGenerator.Framework.Image.Models.Roi;
 using SlideGenerator.Framework.Image.Services;
 
 namespace SlideGenerator.Framework.Image.Entities.Roi;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:09:45 GMT+7
 public sealed class ProminentRoi : RoiCalculator
 {
-    public ProminentOptions Options { get; init; } = new();
+    private static readonly Lazy<ProminentRoi> LazyInstance = new(() => new ProminentRoi());
+
+    private ProminentRoi()
+    {
+    }
+
+    public static ProminentRoi Instance => LazyInstance.Value;
 
     /// <summary>
     ///     Finds a prominent ROI using saliency and returns a crop rectangle within image bounds.
@@ -15,7 +21,7 @@ public sealed class ProminentRoi : RoiCalculator
     /// <param name="image">The source image data used for saliency computation.</param>
     /// <param name="size">The target size that defines the base crop dimensions.</param>
     /// <returns>A Rectangle representing the most prominent region of interest within the image.</returns>
-    private Rectangle GetProminentRoi(Mat image, Size size)
+    public static Rectangle GetProminentRoi(Mat image, Size size)
     {
         using var saliencyMap = ComputingService.ComputeSaliency(image);
 
@@ -45,9 +51,6 @@ public sealed class ProminentRoi : RoiCalculator
         var topLeftX = Math.Clamp(maxLoc.X - cropW / 2, 0, w - cropW);
         var topLeftY = Math.Clamp(maxLoc.Y - cropH / 2, 0, h - cropH);
         var roi = new Rectangle(topLeftX, topLeftY, cropW, cropH);
-
-        // expand roi
-        roi = Options.PaddingRatio.Expand(roi, new Rectangle(0, 0, w, h));
         return roi;
     }
 

@@ -6,6 +6,7 @@ using ImageMagick;
 
 namespace SlideGenerator.Framework.Image.Services;
 
+/// Reviewed by @thnhmai06 at 01 / 03 / 2026 02:11:50 GMT+7
 public static class ConvertingService
 {
     /// <summary>

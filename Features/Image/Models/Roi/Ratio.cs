@@ -6,6 +6,7 @@ namespace SlideGenerator.Framework.Image.Models.Roi;
 /// <summary>
 ///     Represents ratios of a rectangle.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:08:30 GMT+7
 public record Ratio
 {
     /// <summary>

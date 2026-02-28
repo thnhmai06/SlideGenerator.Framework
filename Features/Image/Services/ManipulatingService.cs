@@ -8,6 +8,7 @@ namespace SlideGenerator.Framework.Image.Services;
 ///     Provides static methods for manipulating images and geometric shapes, including cropping, resizing, and clamping
 ///     rectangles and points to specified bounds.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:12:40 GMT+7
 public static class ManipulatingService
 {
     /// <summary>

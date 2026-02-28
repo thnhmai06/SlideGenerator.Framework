@@ -3,15 +3,24 @@ using Emgu.CV;
 
 namespace SlideGenerator.Framework.Image.Entities.Roi;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:09:00 GMT+7
 public sealed class CenterRoi : RoiCalculator
 {
+    private static readonly Lazy<CenterRoi> LazyInstance = new(() => new CenterRoi());
+
+    private CenterRoi()
+    {
+    }
+
+    public static CenterRoi Instance => LazyInstance.Value;
+
     /// <summary>
     ///     Calculates the center crop coordinates.
     /// </summary>
     /// <param name="mat">The source mat.</param>
     /// <param name="size">The desired crop size.</param>
     /// <returns>A centered rectangle of the requested size (clamped to image bounds).</returns>
-    private static Rectangle GetCenterRoi(Mat mat, Size size)
+    public static Rectangle GetCenterRoi(Mat mat, Size size)
     {
         var point = new Point
         {

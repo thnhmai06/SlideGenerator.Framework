@@ -9,6 +9,7 @@ namespace SlideGenerator.Framework.Image.Services;
 ///     Provides static methods for computing image saliency maps and determining the visual center of shapes within
 ///     images.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:11:50 GMT+7
 public static class ComputingService
 {
     /// <summary>

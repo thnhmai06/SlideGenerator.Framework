@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:15:32 GMT+7
 public static partial class XmlPresentationService
 {
     /// <summary>
@@ -41,7 +42,7 @@ public static partial class XmlPresentationService
     ///     A <see cref="PresentationDocument" /> instance representing the newly created presentation based on the
     ///     template.
     /// </returns>
-    public static PresentationDocument OpenPresentationFromTemplate(string filePath)
+    public static PresentationDocument CreatePresentationFromTemplate(string filePath)
     {
         return PresentationDocument.CreateFromTemplate(filePath);
     }
@@ -68,7 +69,8 @@ public static partial class XmlPresentationService
     public static IEnumerable<SlidePart> EnumerateSlides(PresentationDocument doc)
     {
         var presentationPart = doc.PresentationPart
-                               ?? throw new InvalidOperationException("Invalid presentation: missing presentation part.");
+                               ?? throw new InvalidOperationException(
+                                   "Invalid presentation: missing presentation part.");
         var presentation = presentationPart.Presentation
                            ?? throw new InvalidOperationException("Invalid presentation: missing root presentation.");
         var slideIdList = presentation.SlideIdList
