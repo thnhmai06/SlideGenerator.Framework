@@ -1,16 +1,20 @@
 using Emgu.CV;
+using SlideGenerator.Framework.Image.Models.FaceDetection;
 
 namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     A face detector model.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 01:38:16 GMT+7
 public abstract class FaceDetectorModel : IDisposable
 {
     /// <summary>
     ///     Gets a value indicating whether the face detection model is available for use.
     /// </summary>
     public abstract bool IsModelAvailable { get; }
+
+    public abstract void Dispose();
 
     /// <summary>
     ///     Initializes the face detection model asynchronously.
@@ -43,7 +47,5 @@ public abstract class FaceDetectorModel : IDisposable
     ///     face candidates. The list is empty if no faces are detected or if detection fails.
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown when the model has not been initialized.</exception>
-    public abstract Task<List<Face>> DetectAsync(Mat mat);
-
-    public abstract void Dispose();
+    public abstract Task<List<FaceInfo>> DetectAsync(Mat mat);
 }

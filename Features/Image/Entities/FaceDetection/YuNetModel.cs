@@ -2,12 +2,14 @@ using System.Buffers;
 using System.Drawing;
 using Emgu.CV;
 using Emgu.CV.Models;
+using SlideGenerator.Framework.Image.Models.FaceDetection;
 
 namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     Asynchronous wrapper for <see cref="FaceDetectorYNModel" />.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 01:38:48 GMT+7
 public sealed class YuNetModel : FaceDetectorModel
 {
     private readonly AsyncLazy<FaceDetectorYNModel> _model =
@@ -70,9 +72,9 @@ public sealed class YuNetModel : FaceDetectorModel
     /// <param name="mat">Input mat to run detection on.</param>
     /// <returns>All faces detected by the model without score filtering.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the model has not been initialized.</exception>
-    public override async Task<List<Face>> DetectAsync(Mat mat)
+    public override async Task<List<FaceInfo>> DetectAsync(Mat mat)
     {
-        var faces = new List<Face>();
+        var faces = new List<FaceInfo>();
 
         if (mat.IsEmpty) return faces;
 
@@ -128,7 +130,7 @@ public sealed class YuNetModel : FaceDetectorModel
                 Point? mouthRight = new Point((int)MathF.Round(buf[i + 10]), (int)MathF.Round(buf[i + 11]));
                 Point? mouthLeft = new Point((int)MathF.Round(buf[i + 12]), (int)MathF.Round(buf[i + 13]));
 
-                faces.Add(new Face(rect, score, rightEye, leftEye, nose, mouthRight, mouthLeft));
+                faces.Add(new FaceInfo(rect, score, rightEye, leftEye, nose, mouthRight, mouthLeft));
             }
         }
         finally

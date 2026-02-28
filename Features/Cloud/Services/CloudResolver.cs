@@ -12,6 +12,7 @@ namespace SlideGenerator.Framework.Cloud.Services;
 ///     property. This class is thread-safe for read operations, but modifications to the Providers collection should be
 ///     synchronized if accessed concurrently.
 /// </remarks>
+/// Reviewed by @thnhmai06 at 01/03/2026 01:33:43 GMT+7
 public sealed class CloudResolver
 {
     private static readonly Lazy<CloudResolver> LazyInstance = new(() => new CloudResolver());
@@ -33,7 +34,8 @@ public sealed class CloudResolver
     [
         GoogleDriveProvider.Instance,
         GooglePhotosProvider.Instance,
-        OneDriveProvider.Instance
+        OneDriveProvider.Instance,
+        SharePointProvider.Instance
     ];
 
     /// <summary>
@@ -41,15 +43,17 @@ public sealed class CloudResolver
     /// </summary>
     /// <param name="uri">The URI to resolve.</param>
     /// <param name="httpClient">An optional HttpClient to use for network requests.</param>
-    /// <returns>The resolved or original URI, or null if resolution fails.</returns>
-    public async Task<Uri?> ResolveLinkAsync(Uri uri, HttpClient? httpClient = null)
+    /// <returns>The resolved URI, or actually URI when use GET if resolution fails.</returns>
+    public async Task<Uri> ResolveLinkAsync(Uri uri, HttpClient? httpClient = null)
     {
-        foreach (var resolver in Providers.Where(resolver => resolver.IsUriSupported(uri)))
-        {
-            httpClient ??= new HttpClient();
-            return await resolver.ResolveUriAsync(uri, httpClient);
-        }
+        // Get actually Uri
+        using var client = httpClient ?? new HttpClient();
+        using var actuallyUriResponse = await client.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead);
+        uri = actuallyUriResponse.RequestMessage?.RequestUri ?? uri;
 
+        // Resolve uri
+        foreach (var resolver in Providers.Where(resolver => resolver.IsUriSupported(uri)))
+            return await resolver.ResolveUriAsync(uri, client).ConfigureAwait(false);
         return uri;
     }
 

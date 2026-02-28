@@ -7,6 +7,7 @@ using SpireFileFormat = Spire.Presentation.FileFormat;
 
 namespace SlideGenerator.Framework.Slide.Services;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:15:16 GMT+7
 public static class SpirePresentationService
 {
     /// <summary>

@@ -1,15 +1,22 @@
 using System.Drawing;
 using Emgu.CV;
-using SlideGenerator.Framework.Image.Entities.FaceDetection;
-using SlideGenerator.Framework.Image.Models.Roi;
+using SlideGenerator.Framework.Image.Models.FaceDetection;
 using SlideGenerator.Framework.Image.Services;
 
 namespace SlideGenerator.Framework.Image.Entities.Roi;
 
+/// Reviewed by @thnhmai06 at 01/03/2026 02:22:38 GMT+7
 public sealed class RuleOfThirdsRoi : RoiCalculator
 {
-    public required FaceDetectorModel FaceDetectorModel { get; init; }
-    public RuleOfThirdsOptions Options { get; init; } = new();
+    private const float DefaultEyeCenterRatioX = 1 / 2f;
+    private const float DefaultEyeCenterRatioY = 1 / 2f;
+    private static readonly Lazy<RuleOfThirdsRoi> LazyInstance = new(() => new RuleOfThirdsRoi());
+
+    private RuleOfThirdsRoi()
+    {
+    }
+
+    public static RuleOfThirdsRoi Instance => LazyInstance.Value;
 
     public override async ValueTask<Rectangle> CalculateRoiAsync(Mat mat, Size targetSize)
     {
@@ -20,14 +27,15 @@ public sealed class RuleOfThirdsRoi : RoiCalculator
         return FollowRuleOfThirds(mat.Size, eyeCenter, croppedSize);
     }
 
-    private async ValueTask<Point> GetEyeCenter(Mat mat)
+    private static async ValueTask<Point> GetEyeCenter(Mat mat)
     {
-        var faces = await FaceDetectorModel.DetectAsync(mat).ConfigureAwait(false);
+        var model = await FaceDetectorModelManager.Instance.GetCurrentModelAsync().ConfigureAwait(false);
+        var faces = await model.DetectAsync(mat).ConfigureAwait(false);
         if (faces.Count == 0)
             // fallback
             return new Point(
-                (int)MathF.Round(mat.Width * Options.DefaultEyeCenterRatioX),
-                (int)MathF.Round(mat.Height * Options.DefaultEyeCenterRatioY));
+                (int)MathF.Round(mat.Width * DefaultEyeCenterRatioX),
+                (int)MathF.Round(mat.Height * DefaultEyeCenterRatioY));
 
         var eyesCenter = new Point(0, 0);
         foreach (var eyeCenter in faces.Select(GetEyeCenter))
@@ -41,9 +49,9 @@ public sealed class RuleOfThirdsRoi : RoiCalculator
         return eyesCenter;
     }
 
-    private static Point? GetEyeCenter(Face face)
+    private static Point? GetEyeCenter(FaceInfo faceInfo)
     {
-        if (face is { RightEye: { } rightEye, LeftEye: { } leftEye })
+        if (faceInfo is { RightEye: { } rightEye, LeftEye: { } leftEye })
             return new Point(
                 (int)MathF.Round((rightEye.X + leftEye.X) / 2f),
                 (int)MathF.Round((rightEye.Y + leftEye.Y) / 2f));

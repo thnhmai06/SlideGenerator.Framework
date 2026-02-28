@@ -7,6 +7,7 @@ namespace SlideGenerator.Framework.Cloud.Entities;
 ///     URLs.
 /// </summary>
 /// <remarks>
+///     Reviewed by @thnhmai06 at 01/03/2026 01:02:53 GMT+7
 ///     This class implements the singleton pattern. Use the <see cref="Instance" /> property to access the
 ///     shared instance. GooglePhotosProvider supports URLs from both photos.app.goo.gl and photos.google.com
 ///     domains.
@@ -23,14 +24,14 @@ public sealed partial class GooglePhotosProvider : CloudProvider
 
     public static GooglePhotosProvider Instance => LazyInstance.Value;
 
-    internal override async Task<Uri?> ResolveUriAsync(Uri supportedUri, HttpClient httpClient)
+    internal override async Task<Uri> ResolveUriAsync(Uri supportedUri, HttpClient httpClient)
     {
-        var url = supportedUri.ToString();
-        var html = await httpClient.GetStringAsync(url);
+        var url = supportedUri.AbsoluteUri;
+        var html = await httpClient.GetStringAsync(url).ConfigureAwait(false);
         var match = GooglePhotosUrlPattern.Match(html);
         return match.Success
             ? new Uri(match.Value)
-            : null;
+            : supportedUri;
     }
 
     internal override bool IsUriSupported(Uri uri)

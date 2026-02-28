@@ -5,6 +5,7 @@ namespace SlideGenerator.Framework.Sheet.Services;
 /// <summary>
 ///     Provides services for working with workbooks (Excel files).
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:14:18 GMT+7
 public static class WorkbookService
 {
     /// <summary>
@@ -51,7 +52,7 @@ public static class WorkbookService
     ///     A read-only dictionary where each key is a worksheet name and each value is the number of data rows in that
     ///     worksheet. If a worksheet contains no data rows, its value will be 0.
     /// </returns>
-    public static IReadOnlyDictionary<string, int> GetSheetsRowCount(IXLWorkbook workbook)
+    public static IReadOnlyDictionary<string, int> GetSheetsRowCounts(IXLWorkbook workbook)
     {
         var result = new Dictionary<string, int>();
         foreach (var worksheet in workbook.Worksheets)

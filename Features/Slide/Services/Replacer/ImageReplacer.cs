@@ -8,6 +8,7 @@ namespace SlideGenerator.Framework.Slide.Services;
 /// <summary>
 ///     Provides image replacement functionality for slides.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:17:04 GMT+7
 public static class ImageReplacer
 {
     /// <summary>

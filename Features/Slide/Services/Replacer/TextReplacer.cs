@@ -14,6 +14,7 @@ using ReplaceInstructions = Dictionary<string, string>;
 /// <summary>
 ///     Provides text replacement functionality for slides on <see cref="MustacheTemplate" />.
 /// </summary>
+/// Reviewed by @thnhmai06 at 01/03/2026 02:20:55 GMT+7
 public static partial class TextReplacer
 {
     private const string MustacheTemplatePattern = @"\{\{\s*([^{}]+?)\s*\}\}"; // {{ placeholder }}
@@ -101,29 +102,29 @@ public static partial class TextReplacer
 
         foreach (var shape in targetShapes)
             // for follow paragraph to save Bullet point
-            foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
-            {
-                var runs = paragraph.Descendants<Run>().ToList();
-                if (runs.Count == 0) continue;
+        foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
+        {
+            var runs = paragraph.Descendants<Run>().ToList();
+            if (runs.Count == 0) continue;
 
-                var builder = new StringBuilder();
-                foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
-                var originalText = builder.ToString();
+            var builder = new StringBuilder();
+            foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
+            var originalText = builder.ToString();
 
-                var newText = await RenderSafeAsync(Stubble, originalText, sanitized);
-                if (newText == originalText) continue;
-                var keysInPara = ScanPlaceholders(originalText);
-                foreach (var key in keysInPara)
-                    if (instructions.TryGetValue(key, out var val))
-                        changeLog.Add((shape, key, val));
+            var newText = await RenderSafeAsync(Stubble, originalText, sanitized).ConfigureAwait(false);
+            if (newText == originalText) continue;
+            var keysInPara = ScanPlaceholders(originalText);
+            foreach (var key in keysInPara)
+                if (instructions.TryGetValue(key, out var val))
+                    changeLog.Add((shape, key, val));
 
-                runs[0].Text ??= new Text();
-                runs[0].Text!.Text = newText;
+            runs[0].Text ??= new Text();
+            runs[0].Text!.Text = newText;
 
-                for (var i = 1; i < runs.Count; i++)
-                    if (runs[i].Text != null)
-                        runs[i].Text!.Text = string.Empty;
-            }
+            for (var i = 1; i < runs.Count; i++)
+                if (runs[i].Text != null)
+                    runs[i].Text!.Text = string.Empty;
+        }
 
         return changeLog;
     }
@@ -139,7 +140,7 @@ public static partial class TextReplacer
         try
         {
             // use stubble
-            return await stubble.RenderAsync(text, replacements);
+            return await stubble.RenderAsync(text, replacements).ConfigureAwait(false);
         }
         catch
         {
@@ -164,7 +165,7 @@ public static partial class TextReplacer
 
     private static string SanitizeXmlValue(string value)
     {
-        if (string.IsNullOrEmpty(value) || !value.Any(XmlConvert.IsXmlChar)) return value;
+        if (string.IsNullOrEmpty(value) || value.All(XmlConvert.IsXmlChar)) return value;
 
         var buffer = new char[value.Length];
         var count = 0;
