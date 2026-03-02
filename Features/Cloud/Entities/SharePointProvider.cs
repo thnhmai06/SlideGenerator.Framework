@@ -1,6 +1,6 @@
 ﻿using System.Web;
 
-namespace SlideGenerator.Framework.Cloud.Entities;
+namespace SlideGenerator.Framework.Features.Cloud.Entities;
 
 /// <summary>
 ///     Provides access to SharePoint as a cloud provider, enabling resolution and support checks for SharePoint URLs.

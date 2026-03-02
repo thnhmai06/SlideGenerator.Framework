@@ -7,7 +7,7 @@ using Stubble.Core;
 using Stubble.Core.Builders;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 
-namespace SlideGenerator.Framework.Slide.Services;
+namespace SlideGenerator.Framework.Features.Slide.Services.Replacer;
 
 using ReplaceInstructions = Dictionary<string, string>;
 

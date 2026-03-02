@@ -1,20 +1,18 @@
-using Emgu.CV;
-using SlideGenerator.Framework.Image.Models.FaceDetection;
+using OpenCvSharp;
+using SlideGenerator.Framework.Features.Image.Models.FaceDetection;
 
-namespace SlideGenerator.Framework.Image.Entities.FaceDetection;
+namespace SlideGenerator.Framework.Features.Image.Entities.FaceDetection;
 
 /// <summary>
 ///     A face detector model.
 /// </summary>
 /// Reviewed by @thnhmai06 at 01/03/2026 01:38:16 GMT+7
-public abstract class FaceDetectorModel : IDisposable
+public abstract class FaceDetectorModel : IAsyncDisposable
 {
     /// <summary>
     ///     Gets a value indicating whether the face detection model is available for use.
     /// </summary>
     public abstract bool IsModelAvailable { get; }
-
-    public abstract void Dispose();
 
     /// <summary>
     ///     Initializes the face detection model asynchronously.
@@ -37,10 +35,6 @@ public abstract class FaceDetectorModel : IDisposable
     /// <summary>
     ///     Attempts to detect faces in the specified image.
     /// </summary>
-    /// <remarks>
-    ///     The method returns all detected face candidates from the underlying model.
-    ///     Score filtering is intentionally left to the caller.
-    /// </remarks>
     /// <param name="mat">The mat in which to search for faces. Must not be null.</param>
     /// <returns>
     ///     A task that represents the asynchronous operation. The task result is a list of detected
@@ -48,4 +42,17 @@ public abstract class FaceDetectorModel : IDisposable
     /// </returns>
     /// <exception cref="InvalidOperationException">Thrown when the model has not been initialized.</exception>
     public abstract Task<List<FaceInfo>> DetectAsync(Mat mat);
+
+    /// <summary>
+    ///     Disposes the model asynchronously.
+    /// </summary>
+    public abstract ValueTask DisposeAsync();
+
+    /// <summary>
+    ///     Synchronous dispose for compatibility.
+    /// </summary>
+    public void Dispose()
+    {
+        DisposeAsync().AsTask().Wait();
+    }
 }

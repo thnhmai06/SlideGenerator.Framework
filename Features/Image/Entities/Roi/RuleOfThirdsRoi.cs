@@ -1,22 +1,30 @@
 using System.Drawing;
-using Emgu.CV;
-using SlideGenerator.Framework.Image.Models.FaceDetection;
-using SlideGenerator.Framework.Image.Services;
+using OpenCvSharp;
+using SlideGenerator.Framework.Features.Image.Contracts;
+using SlideGenerator.Framework.Features.Image.Models.FaceDetection;
+using SlideGenerator.Framework.Features.Image.Services;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
-namespace SlideGenerator.Framework.Image.Entities.Roi;
+namespace SlideGenerator.Framework.Features.Image.Entities.Roi;
 
-/// Reviewed by @thnhmai06 at 01/03/2026 02:22:38 GMT+7
+/// Reviewed by @thnhmai06 at 02/03/2026 11:28:25 GMT+7
 public sealed class RuleOfThirdsRoi : RoiCalculator
 {
     private const float DefaultEyeCenterRatioX = 1 / 2f;
     private const float DefaultEyeCenterRatioY = 1 / 2f;
-    private static readonly Lazy<RuleOfThirdsRoi> LazyInstance = new(() => new RuleOfThirdsRoi());
 
-    private RuleOfThirdsRoi()
+    private readonly IFaceDetectorModelProvider _faceDetectorProvider;
+
+    /// <summary>
+    ///     Initializes a new instance with face detection support.
+    /// </summary>
+    /// <param name="faceDetectorProvider">Face detector model provider for eye detection.</param>
+    /// <exception cref="ArgumentNullException">Thrown when faceDetectorProvider is null.</exception>
+    public RuleOfThirdsRoi(IFaceDetectorModelProvider faceDetectorProvider)
     {
+        _faceDetectorProvider = faceDetectorProvider ?? throw new ArgumentNullException(nameof(faceDetectorProvider));
     }
-
-    public static RuleOfThirdsRoi Instance => LazyInstance.Value;
 
     public override async ValueTask<Rectangle> CalculateRoiAsync(Mat mat, Size targetSize)
     {
@@ -24,18 +32,20 @@ public sealed class RuleOfThirdsRoi : RoiCalculator
             Math.Min(mat.Width, targetSize.Width),
             Math.Min(mat.Height, targetSize.Height));
         var eyeCenter = await GetEyeCenter(mat).ConfigureAwait(false);
-        return FollowRuleOfThirds(mat.Size, eyeCenter, croppedSize);
+        var imageSize = new Size(mat.Width, mat.Height);
+        return FollowRuleOfThirds(imageSize, eyeCenter, croppedSize);
     }
 
-    private static async ValueTask<Point> GetEyeCenter(Mat mat)
+    private async ValueTask<Point> GetEyeCenter(Mat mat)
     {
-        var model = await FaceDetectorModelManager.Instance.GetCurrentModelAsync().ConfigureAwait(false);
+        var model = await _faceDetectorProvider.GetCurrentModelAsync().ConfigureAwait(false);
+
+        if (!model.IsModelAvailable)
+            return GetDefaultEyeCenter(mat);
+
         var faces = await model.DetectAsync(mat).ConfigureAwait(false);
         if (faces.Count == 0)
-            // fallback
-            return new Point(
-                (int)MathF.Round(mat.Width * DefaultEyeCenterRatioX),
-                (int)MathF.Round(mat.Height * DefaultEyeCenterRatioY));
+            return GetDefaultEyeCenter(mat);
 
         var eyesCenter = new Point(0, 0);
         foreach (var eyeCenter in faces.Select(GetEyeCenter))
@@ -47,6 +57,13 @@ public sealed class RuleOfThirdsRoi : RoiCalculator
         eyesCenter.X /= faces.Count;
         eyesCenter.Y /= faces.Count;
         return eyesCenter;
+    }
+
+    private static Point GetDefaultEyeCenter(Mat mat)
+    {
+        return new Point(
+            (int)MathF.Round(mat.Width * DefaultEyeCenterRatioX),
+            (int)MathF.Round(mat.Height * DefaultEyeCenterRatioY));
     }
 
     private static Point? GetEyeCenter(FaceInfo faceInfo)

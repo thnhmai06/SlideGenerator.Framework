@@ -1,44 +1,43 @@
 using System.Collections.Concurrent;
-using SlideGenerator.Framework.Image.Entities.FaceDetection;
-using SlideGenerator.Framework.Image.Models.FaceDetection;
+using SlideGenerator.Framework.Features.Image.Contracts;
+using SlideGenerator.Framework.Features.Image.Entities.FaceDetection;
+using SlideGenerator.Framework.Features.Image.Models.FaceDetection;
 
-namespace SlideGenerator.Framework.Image.Services;
+namespace SlideGenerator.Framework.Features.Image.Services;
 
 /// <summary>
 ///     Manages face detector model selection and lifecycle at runtime.
 /// </summary>
-/// <remarks>
-///     Reviewed by @thnhmai06 at 01/03/2026 02:07:55 GMT+7
-/// </remarks>
-public sealed class FaceDetectorModelManager : IAsyncDisposable
+/// Reviewed by @thnhmai06 at 02/03/2026 11:34:31 GMT+7
+public sealed class FaceDetectorModelManager : IFaceDetectorModelProvider, IAsyncDisposable
 {
-    private static readonly Lazy<FaceDetectorModelManager> LazyInstance = new(() => new FaceDetectorModelManager());
-
+    private readonly IFaceDetectorModelFactory _modelFactory;
     private readonly ConcurrentDictionary<FaceDetectorModelKey, FaceDetectorModel> _models = new();
     private bool _disposed;
 
-    private FaceDetectorModelManager()
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="FaceDetectorModelManager"/> class.
+    /// </summary>
+    /// <param name="modelFactory">Factory for creating face detector models.</param>
+    public FaceDetectorModelManager(IFaceDetectorModelFactory modelFactory)
     {
+        _modelFactory = modelFactory ?? throw new ArgumentNullException(nameof(modelFactory));
     }
-
-    public static FaceDetectorModelManager Instance => LazyInstance.Value;
 
     /// <summary>
     ///     Gets current model key.
     /// </summary>
     public FaceDetectorModelKey CurrentModelKey { get; private set; } = FaceDetectorModelKey.YuNet;
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         if (_disposed)
-            return ValueTask.CompletedTask;
+            return;
 
         _disposed = true;
         foreach (var key in _models.Keys)
             if (_models.TryRemove(key, out var model))
-                model.Dispose();
-
-        return ValueTask.CompletedTask;
+                await model.DisposeAsync();
     }
 
     /// <summary>
@@ -54,6 +53,8 @@ public sealed class FaceDetectorModelManager : IAsyncDisposable
     /// <summary>
     ///     Gets current model instance and ensures it is initialized.
     /// </summary>
+    /// <returns>The initialized face detector model.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the model could not be initialized.</exception>
     public async Task<FaceDetectorModel> GetCurrentModelAsync()
     {
         ThrowIfDisposed();
@@ -96,9 +97,9 @@ public sealed class FaceDetectorModelManager : IAsyncDisposable
     ///     A collection of <see cref="FaceDetectorModelKey" /> values representing the supported model keys for the
     ///     <see cref="FaceDetectorModel" />.
     /// </returns>
-    public static ICollection<FaceDetectorModelKey> GetSupportedModelKeys()
+    public ICollection<FaceDetectorModelKey> GetSupportedModelKeys()
     {
-        return Enum.GetValues<FaceDetectorModelKey>();
+        return _modelFactory.GetSupportedModelKeys();
     }
 
     /// <summary>
@@ -114,16 +115,7 @@ public sealed class FaceDetectorModelManager : IAsyncDisposable
 
     private FaceDetectorModel GetOrAddModel(FaceDetectorModelKey modelKey)
     {
-        return _models.GetOrAdd(modelKey, AddModel);
-    }
-
-    private static FaceDetectorModel AddModel(FaceDetectorModelKey modelKey)
-    {
-        return modelKey switch
-        {
-            FaceDetectorModelKey.YuNet => new YuNetModel(),
-            _ => throw new NotSupportedException($"Face detector model '{modelKey}' is not supported.")
-        };
+        return _models.GetOrAdd(modelKey, key => _modelFactory.CreateModel(key));
     }
 
     private void ThrowIfDisposed()

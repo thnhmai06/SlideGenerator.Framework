@@ -1,6 +1,6 @@
-using SlideGenerator.Framework.Cloud.Entities;
+using SlideGenerator.Framework.Features.Cloud.Entities;
 
-namespace SlideGenerator.Framework.Cloud.Services;
+namespace SlideGenerator.Framework.Features.Cloud.Services;
 
 /// <summary>
 ///     Provides a singleton service for resolving URIs using a set of supported cloud providers.

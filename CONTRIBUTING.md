@@ -34,7 +34,7 @@ This library is the core engine of the SlideGenerator project. Contributions her
   - `Cloud/`: URL resolution logic.
   - `Sheet/`: Excel/CSV parsing logic.
   - `Slide/`: OpenXML SDK wrappers for PPTX manipulation.
-  - `Image/`: EmguCV integration for image processing.
+  - `Image/`: OpenCvSharp4 integration for image processing.
 - `src/SlideGenerator.Framework.Tests`: Unit and integration tests.
 
 ## Coding Guidelines

@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using System.Web;
 
-namespace SlideGenerator.Framework.Cloud.Entities;
+namespace SlideGenerator.Framework.Features.Cloud.Entities;
 
 /// <summary>
 ///     Provides a cloud provider implementation for accessing and resolving Google Drive file and folder URIs.
