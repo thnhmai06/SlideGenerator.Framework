@@ -23,20 +23,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="docs\**" />
-		<Compile Remove="tests\**" />
-		<EmbeddedResource Remove="docs\**" />
-		<EmbeddedResource Remove="tests\**" />
-		<None Remove="docs\**" />
-		<None Remove="tests\**" />
+		<Compile Remove="Documents\**" />
+		<EmbeddedResource Remove="Documents\**" />
+		<None Remove="Documents\**" />
 		<None Remove=".gitignore" />
-		<None Remove="Assets\face_detection_yunet_2023mar.onnx" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="Assets\face_detection_yunet_2023mar.onnx">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
