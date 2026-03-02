@@ -1,4 +1,4 @@
-namespace SlideGenerator.Framework.Image.Models.Roi;
+namespace SlideGenerator.Framework.Features.Image.Models.Roi;
 
 /// <summary>
 ///     Specifies the region of interest (ROI) detection type for image cropping.

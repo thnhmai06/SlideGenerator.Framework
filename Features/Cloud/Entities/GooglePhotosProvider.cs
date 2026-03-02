@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace SlideGenerator.Framework.Cloud.Entities;
+namespace SlideGenerator.Framework.Features.Cloud.Entities;
 
 /// <summary>
 ///     Provides access to Google Photos as a cloud provider, enabling resolution and support checks for Google Photos

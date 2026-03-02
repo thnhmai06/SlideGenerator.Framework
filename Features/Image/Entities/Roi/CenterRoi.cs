@@ -1,7 +1,9 @@
 using System.Drawing;
-using Emgu.CV;
+using OpenCvSharp;
+using Point = System.Drawing.Point;
+using Size = System.Drawing.Size;
 
-namespace SlideGenerator.Framework.Image.Entities.Roi;
+namespace SlideGenerator.Framework.Features.Image.Entities.Roi;
 
 /// Reviewed by @thnhmai06 at 01/03/2026 02:09:00 GMT+7
 public sealed class CenterRoi : RoiCalculator

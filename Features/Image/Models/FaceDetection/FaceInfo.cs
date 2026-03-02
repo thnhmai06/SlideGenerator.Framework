@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace SlideGenerator.Framework.Image.Models.FaceDetection;
+namespace SlideGenerator.Framework.Features.Image.Models.FaceDetection;
 
 /// <summary>
 ///     Represents a face with its bounding box, score, and eye landmarks (if available).
@@ -12,6 +12,7 @@ namespace SlideGenerator.Framework.Image.Models.FaceDetection;
 /// <param name="Nose">The nose landmark (if provided by the model).</param>
 /// <param name="RightMouth">The right mouth corner landmark (if provided by the model).</param>
 /// <param name="LeftMouth">The left mouth corner landmark (if provided by the model).</param>
+/// Reviewed by @thnhmai06 at 02/03/2026 11:42:59 GMT+7
 public readonly record struct FaceInfo(
     Rectangle Rect,
     float Score,

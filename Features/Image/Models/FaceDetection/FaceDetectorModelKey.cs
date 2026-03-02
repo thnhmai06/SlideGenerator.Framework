@@ -1,8 +1,9 @@
-namespace SlideGenerator.Framework.Image.Models.FaceDetection;
+namespace SlideGenerator.Framework.Features.Image.Models.FaceDetection;
 
 /// <summary>
 ///     Supported face detector model keys.
 /// </summary>
+/// Reviewed by @thnhmai06 at 02/03/2026 11:42:50 GMT+7
 public enum FaceDetectorModelKey
 {
     YuNet = 0

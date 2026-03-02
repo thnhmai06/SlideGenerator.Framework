@@ -1,14 +1,15 @@
 using System.Drawing;
-using Emgu.CV;
-using Emgu.CV.CvEnum;
+using OpenCvSharp;
+using Point = System.Drawing.Point;
+using CvSize = OpenCvSharp.Size;
 
-namespace SlideGenerator.Framework.Image.Services;
+namespace SlideGenerator.Framework.Features.Image.Services;
 
 /// <summary>
 ///     Provides static methods for manipulating images and geometric shapes, including cropping, resizing, and clamping
 ///     rectangles and points to specified bounds.
 /// </summary>
-/// Reviewed by @thnhmai06 at 01/03/2026 02:12:40 GMT+7
+/// Reviewed by @thnhmai06 at 01/03/2026 14:21:38 GMT+7
 public static class ManipulatingService
 {
     /// <summary>
@@ -18,7 +19,7 @@ public static class ManipulatingService
     /// <param name="rect">The region of interest to crop to.</param>
     public static void Crop(ref Mat mat, Rectangle rect)
     {
-        var croppedMat = new Mat(mat, rect);
+        var croppedMat = new Mat(mat, new Rect(rect.X, rect.Y, rect.Width, rect.Height));
         var cloned = croppedMat.Clone();
 
         mat.Dispose();
@@ -31,10 +32,11 @@ public static class ManipulatingService
     /// </summary>
     /// <param name="mat">The mat to resize (modified in place).</param>
     /// <param name="size">The size to resize to.</param>
-    public static void Resize(ref Mat mat, Size size)
+    /// <param name="interpolation">Interpolation method.</param>
+    public static void Resize(ref Mat mat, CvSize size, InterpolationFlags interpolation = InterpolationFlags.Area)
     {
         var resizedMat = new Mat();
-        CvInvoke.Resize(mat, resizedMat, size, 0, 0, Inter.Area);
+        Cv2.Resize(mat, resizedMat, size, 0, 0, interpolation);
 
         mat.Dispose();
         mat = resizedMat;
@@ -109,10 +111,10 @@ public static class ManipulatingService
     /// <summary>
     ///     Get the largest size that has the same aspect ratio with the target size and fits within the original size.
     /// </summary>
-    /// <param name="original">The original size.</param>
-    /// <param name="target">The target size.</param>
+    /// <param name="original">The original size (OpenCvSharp.Size).</param>
+    /// <param name="target">The target size (OpenCvSharp.Size).</param>
     /// <returns>The largest size that has the same aspect ratio with the target size and fits within the original size.</returns>
-    public static Size GetMaxAspectSize(Size original, Size target)
+    public static CvSize GetMaxAspectSize(CvSize original, CvSize target)
     {
         var originalAspect = original.Width / (double)original.Height;
         var targetAspect = target.Width / (double)target.Height;
@@ -131,6 +133,6 @@ public static class ManipulatingService
 
         width = Math.Min(width, original.Width);
         height = Math.Min(height, original.Height);
-        return new Size(width, height);
+        return new CvSize(width, height);
     }
 }

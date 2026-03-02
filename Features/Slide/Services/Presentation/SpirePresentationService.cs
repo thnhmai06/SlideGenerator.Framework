@@ -1,11 +1,11 @@
-using SlideGenerator.Framework.Slide.Models;
+using SlideGenerator.Framework.Features.Slide.Models;
 using Spire.Presentation;
 using Spire.Presentation.Drawing;
 using SlidePicture = Spire.Presentation.SlidePicture;
 using SpirePresentation = Spire.Presentation.Presentation;
 using SpireFileFormat = Spire.Presentation.FileFormat;
 
-namespace SlideGenerator.Framework.Slide.Services;
+namespace SlideGenerator.Framework.Features.Slide.Services.Presentation;
 
 /// Reviewed by @thnhmai06 at 01/03/2026 02:15:16 GMT+7
 public static class SpirePresentationService

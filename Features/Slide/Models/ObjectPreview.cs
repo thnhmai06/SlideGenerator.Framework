@@ -1,4 +1,4 @@
-namespace SlideGenerator.Framework.Slide.Models;
+namespace SlideGenerator.Framework.Features.Slide.Models;
 
 /// <summary>
 ///     Represents presentation object data and its preview.

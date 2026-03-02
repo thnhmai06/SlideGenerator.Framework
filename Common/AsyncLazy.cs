@@ -1,4 +1,4 @@
-namespace SlideGenerator.Framework;
+namespace SlideGenerator.Framework.Common;
 
 /// <summary>
 ///     Provides lazy asynchronous initialization with thread-safe single execution guarantee and reset capability.

@@ -1,10 +1,11 @@
 using System.Drawing;
-using Emgu.CV;
-using SlideGenerator.Framework.Image.Services;
+using OpenCvSharp;
+using SlideGenerator.Framework.Features.Image.Services;
+using Size = System.Drawing.Size;
 
-namespace SlideGenerator.Framework.Image.Entities.Roi;
+namespace SlideGenerator.Framework.Features.Image.Entities.Roi;
 
-/// Reviewed by @thnhmai06 at 01/03/2026 02:09:45 GMT+7
+/// Reviewed by @thnhmai06 at 01/03/2026 14:32:43 GMT+7
 public sealed class ProminentRoi : RoiCalculator
 {
     private static readonly Lazy<ProminentRoi> LazyInstance = new(() => new ProminentRoi());
@@ -20,15 +21,18 @@ public sealed class ProminentRoi : RoiCalculator
     /// </summary>
     /// <param name="image">The source image data used for saliency computation.</param>
     /// <param name="size">The target size that defines the base crop dimensions.</param>
-    /// <returns>A Rectangle representing the most prominent region of interest within the image.</returns>
+    /// <returns>
+    /// A <see cref="Rectangle"/> representing the most prominent region of interest within the image.
+    /// If saliency could not be computed, use <see cref="CenterRoi"/>.
+    /// </returns>
     public static Rectangle GetProminentRoi(Mat image, Size size)
     {
         using var saliencyMap = ComputingService.ComputeSaliency(image);
+        if (saliencyMap is null || saliencyMap.Empty())
+            return CenterRoi.GetCenterRoi(image, size);
 
-        var h = image.Height;
         var w = image.Width;
-
-        // Base crop size (clamped to image)
+        var h = image.Height;
         var cropW = Math.Min(w, size.Width);
         var cropH = Math.Min(h, size.Height);
 
@@ -37,15 +41,13 @@ public sealed class ProminentRoi : RoiCalculator
         if (kSize % 2 == 0) kSize++;
 
         using var blurred = new Mat();
-        CvInvoke.GaussianBlur(
+        Cv2.GaussianBlur(
             saliencyMap, blurred,
-            new Size(kSize, kSize), 0
+            new OpenCvSharp.Size(kSize, kSize), 0
         );
 
         // locate max saliency response
-        double minVal = 0, maxVal = 0;
-        Point minLoc = default, maxLoc = default;
-        CvInvoke.MinMaxLoc(blurred, ref minVal, ref maxVal, ref minLoc, ref maxLoc);
+        Cv2.MinMaxLoc(blurred, out _, out _, out _, out var maxLoc);
 
         // center roi at the most salient point
         var topLeftX = Math.Clamp(maxLoc.X - cropW / 2, 0, w - cropW);

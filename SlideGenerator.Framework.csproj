@@ -30,16 +30,22 @@
 		<None Remove="docs\**" />
 		<None Remove="tests\**" />
 		<None Remove=".gitignore" />
+		<None Remove="Assets\face_detection_yunet_2023mar.onnx" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Assets\face_detection_yunet_2023mar.onnx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Downloader" Version="4.1.1" />
-		<PackageReference Include="Emgu.CV.Models" Version="4.12.0.5764" PrivateAssets="none" />
-		<PackageReference Include="Emgu.CV" Version="4.12.0.5764" PrivateAssets="none" />
 		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.3" PrivateAssets="none" />
 		<PackageReference Include="ClosedXML" Version="0.105.0" PrivateAssets="none" />
 		<PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" PrivateAssets="none" />
 		<PackageReference Include="FreeSpire.Presentation" Version="9.3.0" PrivateAssets="none" />
+		<PackageReference Include="OpenCvSharp4" Version="4.13.0.20260228" />
 		<PackageReference Include="Stubble.Core" Version="1.10.8" PrivateAssets="none" />
 	</ItemGroup>
 

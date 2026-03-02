@@ -2,7 +2,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 
-namespace SlideGenerator.Framework.Slide.Services;
+namespace SlideGenerator.Framework.Features.Slide.Services.Presentation;
 
 /// Reviewed by @thnhmai06 at 01/03/2026 02:16:48 GMT+7
 public static partial class XmlPresentationService
