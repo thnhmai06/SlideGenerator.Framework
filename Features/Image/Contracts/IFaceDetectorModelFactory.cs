@@ -18,9 +18,8 @@ public interface IFaceDetectorModelFactory
     public FaceDetectorModel CreateModel(FaceDetectorModelKey modelKey);
 
     /// <summary>
-    /// Géts all supported face detector model keys.
+    ///     Géts all supported face detector model keys.
     /// </summary>
     /// <returns>A collection of supported face detector model keys.</returns>
     public ICollection<FaceDetectorModelKey> GetSupportedModelKeys();
 }
-

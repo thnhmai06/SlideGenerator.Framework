@@ -7,7 +7,7 @@ namespace SlideGenerator.Framework.Features.Image.Services;
 public static class ConvertingService
 {
     /// <summary>
-    ///     Converts a <see cref="MagickImage"/> to an OpenCV <see cref="Mat"/>.
+    ///     Converts a <see cref="MagickImage" /> to an OpenCV <see cref="Mat" />.
     /// </summary>
     /// <param name="image">The source <see cref="MagickImage" /> to convert.</param>
     /// <param name="mapping">The mapping of the pixels (e.g. RGB/RGBA/ARGB).</param>

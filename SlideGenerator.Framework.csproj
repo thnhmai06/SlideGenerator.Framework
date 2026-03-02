@@ -1,42 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<LangVersion>14.0</LangVersion>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn);1591</NoWarn>
-		<SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
-		<DevelopmentDependency>false</DevelopmentDependency>
-		
-		<!-- NuGet Package Metadata -->
-		<PackageId>SlideGenerator.Framework</PackageId>
-		<Version>2.0.0</Version>
-		<Authors>thnhmai06</Authors>
-		<Description>A library supports generating PowerPoint presentations from Excel workbook.</Description>
-		<PackageTags>PowerPoint;Excel;Slide;Generator;OpenXML;Presentation</PackageTags>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryUrl>https://github.com/thnhmai06/SlideGenerator.Framework</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>14.0</LangVersion>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+        <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
+        <DevelopmentDependency>false</DevelopmentDependency>
 
-	<ItemGroup>
-		<Compile Remove="Documents\**" />
-		<EmbeddedResource Remove="Documents\**" />
-		<None Remove="Documents\**" />
-		<None Remove=".gitignore" />
-	</ItemGroup>
+        <!-- NuGet Package Metadata -->
+        <PackageId>SlideGenerator.Framework</PackageId>
+        <Version>2.0.0</Version>
+        <Authors>thnhmai06</Authors>
+        <Description>A library supports generating PowerPoint presentations from Excel workbook.</Description>
+        <PackageTags>PowerPoint;Excel;Slide;Generator;OpenXML;Presentation</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/thnhmai06/SlideGenerator.Framework</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Downloader" Version="4.1.1" />
-		<PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.3" PrivateAssets="none" />
-		<PackageReference Include="ClosedXML" Version="0.105.0" PrivateAssets="none" />
-		<PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" PrivateAssets="none" />
-		<PackageReference Include="FreeSpire.Presentation" Version="9.3.0" PrivateAssets="none" />
-		<PackageReference Include="OpenCvSharp4" Version="4.13.0.20260228" />
-		<PackageReference Include="Stubble.Core" Version="1.10.8" PrivateAssets="none" />
-	</ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Documents\**"/>
+        <EmbeddedResource Remove="Documents\**"/>
+        <None Remove="Documents\**"/>
+        <None Remove=".gitignore"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Downloader" Version="4.1.1"/>
+        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.3" PrivateAssets="none"/>
+        <PackageReference Include="ClosedXML" Version="0.105.0" PrivateAssets="none"/>
+        <PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" PrivateAssets="none"/>
+        <PackageReference Include="FreeSpire.Presentation" Version="9.3.0" PrivateAssets="none"/>
+        <PackageReference Include="OpenCvSharp4" Version="4.13.0.20260228"/>
+        <PackageReference Include="Stubble.Core" Version="1.10.8" PrivateAssets="none"/>
+    </ItemGroup>
 
 </Project>

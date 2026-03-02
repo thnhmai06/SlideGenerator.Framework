@@ -19,7 +19,6 @@ namespace SlideGenerator.Framework.Features.Image.Entities.FaceDetection;
 /// <param name="topK">Keep top K b-boxes before NMS</param>
 /// <param name="backendId">The id of backend</param>
 /// <param name="targetId">The id of target device</param>
-/// 
 /// Reviewed by @thnhmai06 at 02/03/2026 11:41:42 GMT+7
 public sealed class YuNetModel(
     string modelPath,
@@ -45,26 +44,18 @@ public sealed class YuNetModel(
 
     public override bool IsModelAvailable => _model is { IsDisposed: false };
 
-    /// <summary>
-    ///     Contains transformation information from resizing and padding operation for coordinate unmapping.
-    /// </summary>
-    private sealed class ResizeAndPadInfo
+    public override async ValueTask DisposeAsync()
     {
-        public required Mat ProcessedMat { get; init; }
-        public required float Scale { get; init; }
-        public required int PadLeft { get; init; }
-        public required int PadTop { get; init; }
-        public required Size OriginalSize { get; init; }
+        await DeInitAsync();
+        DetectLock.Dispose();
     }
 
     public override Task<bool> InitAsync()
     {
         if (!IsModelAvailable)
-        {
             _model = new FaceDetectorYN(
                 modelPath, configPath ?? string.Empty, inputSize,
                 scoreThreshold, nmsThreshold, topK, backendId, targetId);
-        }
 
         return Task.FromResult(IsModelAvailable);
     }
@@ -239,9 +230,15 @@ public sealed class YuNetModel(
         return null;
     }
 
-    public override async ValueTask DisposeAsync()
+    /// <summary>
+    ///     Contains transformation information from resizing and padding operation for coordinate unmapping.
+    /// </summary>
+    private sealed class ResizeAndPadInfo
     {
-        await DeInitAsync();
-        DetectLock.Dispose();
+        public required Mat ProcessedMat { get; init; }
+        public required float Scale { get; init; }
+        public required int PadLeft { get; init; }
+        public required int PadTop { get; init; }
+        public required Size OriginalSize { get; init; }
     }
 }

@@ -22,8 +22,8 @@ public sealed class ProminentRoi : RoiCalculator
     /// <param name="image">The source image data used for saliency computation.</param>
     /// <param name="size">The target size that defines the base crop dimensions.</param>
     /// <returns>
-    /// A <see cref="Rectangle"/> representing the most prominent region of interest within the image.
-    /// If saliency could not be computed, use <see cref="CenterRoi"/>.
+    ///     A <see cref="Rectangle" /> representing the most prominent region of interest within the image.
+    ///     If saliency could not be computed, use <see cref="CenterRoi" />.
     /// </returns>
     public static Rectangle GetProminentRoi(Mat image, Size size)
     {

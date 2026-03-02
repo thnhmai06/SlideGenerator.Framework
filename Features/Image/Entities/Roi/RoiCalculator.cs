@@ -33,20 +33,21 @@ public static class RoiCalculatorExtensions
     /// <param name="faceDetectorProvider">Face detector model provider. Required for RuleOfThirds.</param>
     /// <returns>ROI calculator instance.</returns>
     /// <exception cref="ArgumentNullException">Thrown when RuleOfThirds is requested without face detector provider.</exception>
-    public static Task<RoiCalculator> GetCalculator(this RoiType type, IFaceDetectorModelProvider? faceDetectorProvider = null)
+    public static Task<RoiCalculator> GetCalculator(this RoiType type,
+        IFaceDetectorModelProvider? faceDetectorProvider = null)
     {
         RoiCalculator calculator = type switch
         {
             RoiType.Center => CenterRoi.Instance,
             RoiType.Prominent => ProminentRoi.Instance,
-            RoiType.RuleOfThirds when faceDetectorProvider != null => 
+            RoiType.RuleOfThirds when faceDetectorProvider != null =>
                 new RuleOfThirdsRoi(faceDetectorProvider),
-            RoiType.RuleOfThirds => 
-                throw new ArgumentNullException(nameof(faceDetectorProvider), 
+            RoiType.RuleOfThirds =>
+                throw new ArgumentNullException(nameof(faceDetectorProvider),
                     "Face detector model provider is required for RuleOfThirds ROI calculation."),
             _ => throw new ArgumentOutOfRangeException(nameof(type))
         };
-        
+
         return Task.FromResult(calculator);
     }
 }
