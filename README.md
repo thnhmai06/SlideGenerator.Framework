@@ -179,7 +179,7 @@ public class MyService(IFaceDetectorModelProvider faceDetectorProvider)
 {
     public async Task<List<FaceInfo>> DetectFaces(string imagePath)
     {
-        // Load image using Framework's ConvertingService
+        // Load image using Framework
         using var magickImage = new MagickImage(imagePath);
         var mat = ConvertingService.ConvertImageToMat(magickImage);
         if (mat == null || mat.Empty())
@@ -231,8 +231,8 @@ public class ImageProcessor(IFaceDetectorModelProvider faceDetectorProvider)
             // Resize using Framework
             ManipulatingService.Resize(ref mat, targetSize);
             
-            // Convert back to bytes using Framework
-            return ConvertingService.ConvertMatToImage(mat);
+            // Convert back
+            return mat.ToBytes();
         }
         finally
         {
@@ -279,8 +279,8 @@ public class ImageManipulation
                 new Size(1920, 1080), 
                 new Size(800, 800));
             
-            // Convert back using Framework
-            var resultBytes = ConvertingService.ConvertMatToImage(mat);
+            // Convert back using Framework (Mat → MagickImage)
+            var mat.ToBytes();
         }
         finally
         {
@@ -288,6 +288,7 @@ public class ImageManipulation
         }
     }
 }
+```
 
 **Key Features**
 
