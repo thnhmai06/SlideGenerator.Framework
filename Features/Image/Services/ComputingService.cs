@@ -84,6 +84,6 @@ public static class ComputingService
         Cv2.MinMaxLoc(distTransform, out _, out _, out _, out var maxLoc);
 
         // Convert OpenCvSharp.Point to System.Drawing.Point
-        return new Point((int)maxLoc.X, (int)maxLoc.Y);
+        return new Point(maxLoc.X, maxLoc.Y);
     }
 }

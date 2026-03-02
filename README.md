@@ -29,7 +29,8 @@ The framework is composed of four core modules:
 
 ### OpenCvSharp4 Runtime
 
-This framework uses **OpenCvSharp4** for computer vision tasks. OpenCvSharp4 provides [native OpenCV bindings](https://github.com/shimat/opencvsharp/blob/main/README.md#native-bindings) for .NET
+This framework uses **OpenCvSharp4** for computer vision tasks. OpenCvSharp4
+provides [native OpenCV bindings](https://github.com/shimat/opencvsharp/blob/main/README.md#native-bindings) for .NET
 with platform-specific runtime packages. **Please install the appropriate runtime package for your target OS**.
 
 | OS                             | Runtime Package                                       | Description                                                    |

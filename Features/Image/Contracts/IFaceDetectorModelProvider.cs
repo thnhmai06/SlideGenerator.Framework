@@ -15,4 +15,3 @@ public interface IFaceDetectorModelProvider
     /// <exception cref="InvalidOperationException">Thrown when the model could not be initialized.</exception>
     Task<FaceDetectorModel> GetCurrentModelAsync();
 }
-

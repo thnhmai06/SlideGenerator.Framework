@@ -16,7 +16,7 @@ public sealed class FaceDetectorModelManager : IFaceDetectorModelProvider, IAsyn
     private bool _disposed;
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="FaceDetectorModelManager"/> class.
+    ///     Initializes a new instance of the <see cref="FaceDetectorModelManager" /> class.
     /// </summary>
     /// <param name="modelFactory">Factory for creating face detector models.</param>
     public FaceDetectorModelManager(IFaceDetectorModelFactory modelFactory)
@@ -41,16 +41,6 @@ public sealed class FaceDetectorModelManager : IFaceDetectorModelProvider, IAsyn
     }
 
     /// <summary>
-    ///     Selects current model key at runtime.
-    /// </summary>
-    /// <param name="modelKey">Model key to select.</param>
-    public void SelectModel(FaceDetectorModelKey modelKey)
-    {
-        ThrowIfDisposed();
-        CurrentModelKey = modelKey;
-    }
-
-    /// <summary>
     ///     Gets current model instance and ensures it is initialized.
     /// </summary>
     /// <returns>The initialized face detector model.</returns>
@@ -65,6 +55,16 @@ public sealed class FaceDetectorModelManager : IFaceDetectorModelProvider, IAsyn
         return initialized
             ? model
             : throw new InvalidOperationException($"Model '{CurrentModelKey}' could not be initialized.");
+    }
+
+    /// <summary>
+    ///     Selects current model key at runtime.
+    /// </summary>
+    /// <param name="modelKey">Model key to select.</param>
+    public void SelectModel(FaceDetectorModelKey modelKey)
+    {
+        ThrowIfDisposed();
+        CurrentModelKey = modelKey;
     }
 
     /// <summary>
