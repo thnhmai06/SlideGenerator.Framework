@@ -30,12 +30,12 @@ This library is the core engine of the SlideGenerator project. Contributions her
 
 ## Project Structure
 
-- `src/SlideGenerator.Framework`: The main library code.
+- `SlideGenerator.Framework`: The main library code.
   - `Cloud/`: URL resolution logic.
   - `Sheet/`: Excel/CSV parsing logic.
   - `Slide/`: OpenXML SDK wrappers for PPTX manipulation.
   - `Image/`: OpenCvSharp4 integration for image processing.
-- `src/SlideGenerator.Framework.Tests`: Unit and integration tests.
+- `SlideGenerator.Framework.Tests`: Unit and integration tests.
 
 ## Coding Guidelines
 

@@ -12,7 +12,7 @@ A powerful, standalone .NET library for orchestrating the generation of PowerPoi
 sources. It provides high-level abstractions for template manipulation, data extraction, and intelligent image
 processing.
 
-**Documentation:** [English](docs/en/overview.md) | [Tiếng Việt](docs/vi/overview.md)
+**Documentation:** [English](Documents/en/overview.md) | [Tiếng Việt](Documents/vi/overview.md)
 
 ## Modules
 
