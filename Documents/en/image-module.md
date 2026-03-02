@@ -222,7 +222,7 @@ using OpenCvSharp;
 using SlideGenerator.Framework.Features.Image.Services;
 using ImageMagick;
 
-// Load image using Framework's ConvertingService
+// Load image using Framework
 using var magickImage = new MagickImage("photo.png");
 var mat = ConvertingService.ConvertImageToMat(magickImage);
 if (mat == null) return;
@@ -234,8 +234,7 @@ try
     // In-place resize using Framework
     ManipulatingService.Resize(ref mat, targetSize, InterpolationFlags.Linear);
     
-    // Convert back using Framework
-    var resultBytes = ConvertingService.ConvertMatToImage(mat);
+    return mat.ToBytes();
 }
 finally
 {
@@ -268,8 +267,7 @@ try
     // In-place crop using Framework
     ManipulatingService.Crop(ref mat, cropRect);
     
-    // Convert back using Framework
-    var resultBytes = ConvertingService.ConvertMatToImage(mat);
+    return mat.ToBytes();
 }
 finally
 {
@@ -321,7 +319,7 @@ public class ImageProcessor(IFaceDetectorModelProvider faceDetectorProvider)
         Size targetSize,
         RoiType roiType)
     {
-        // Load image using Framework's ConvertingService
+        // Load image using Framework
         using var magickImage = new MagickImage(imagePath);
         var mat = ConvertingService.ConvertImageToMat(magickImage);
         if (mat == null || mat.Empty())
@@ -344,8 +342,7 @@ public class ImageProcessor(IFaceDetectorModelProvider faceDetectorProvider)
             // Resize to target using Framework
             ManipulatingService.Resize(ref mat, targetSize);
             
-            // Convert back to bytes using Framework
-            return ConvertingService.ConvertMatToImage(mat);
+            return mat.ToBytes();
         }
         finally
         {

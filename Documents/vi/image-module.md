@@ -262,7 +262,7 @@ public class MyService(IFaceDetectorModelProvider faceDetectorProvider)
 {
     public async Task<List<FaceInfo>> DetectFaces(string imagePath)
     {
-        // Tải hình ảnh sử dụng ConvertingService của Framework
+        // Tải hình ảnh sử dụng Framework
         using var magickImage = new MagickImage(imagePath);
         var mat = ConvertingService.ConvertImageToMat(magickImage);
         if (mat == null || mat.Empty())
@@ -300,7 +300,7 @@ public class ImageCropper
         Size targetSize,
         IFaceDetectorModelProvider provider)
     {
-        // Tải hình ảnh sử dụng ConvertingService của Framework
+        // Tải hình ảnh sử dụng Framework
         using var magickImage = new MagickImage(imagePath);
         var mat = ConvertingService.ConvertImageToMat(magickImage);
         if (mat == null || mat.Empty())
@@ -319,8 +319,7 @@ public class ImageCropper
             ManipulatingService.Crop(ref mat, cropRect);
             ManipulatingService.Resize(ref mat, targetSize);
             
-            // Chuyển đổi trở lại sử dụng Framework
-            return ConvertingService.ConvertMatToImage(mat);
+            return mat.ToBytes();
         }
         finally
         {
