@@ -3,7 +3,7 @@ using OpenCvSharp;
 
 namespace SlideGenerator.Framework.Features.Image.Services;
 
-/// Reviewed by @thnhmai06 at 01 / 03 / 2026 11:47:22 GMT+7
+/// Reviewed by @thnhmai06 at 05/03/2026
 public static class ConvertingService
 {
     /// <summary>
@@ -14,7 +14,7 @@ public static class ConvertingService
     /// <returns>
     ///     A <see cref="Mat" /> containing the image data, or <see langword="null" /> if the conversion fails.
     /// </returns>
-    public static Mat? ConvertImageToMat(MagickImage image, PixelMapping mapping = PixelMapping.BGR)
+    public static Mat? ConvertToMat(this MagickImage image, PixelMapping mapping = PixelMapping.BGR)
     {
         var pixels = image.GetPixels();
         var bytes = pixels.ToByteArray(mapping);

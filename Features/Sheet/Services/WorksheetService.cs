@@ -5,7 +5,7 @@ namespace SlideGenerator.Framework.Features.Sheet.Services;
 /// <summary>
 ///     Provides services for working with Excel worksheets.
 /// </summary>
-/// Reviewed by @thnhmai06 at 01/03/2026 02:14:36 GMT+7
+/// Reviewed by @thnhmai06 at 05/03/2026
 public static class WorksheetService
 {
     /// <summary>
@@ -20,7 +20,7 @@ public static class WorksheetService
     ///     An <see cref="IXLRange" /> representing the range of cells with content, or <see langword="null" /> if no cells
     ///     contain content.
     /// </returns>
-    public static IXLRange? GetContentRange(IXLWorksheet worksheet)
+    public static IXLRange? GetContentRange(this IXLWorksheet worksheet)
     {
         return worksheet.RangeUsed(XLCellsUsedOptions.Contents);
     }
@@ -46,7 +46,7 @@ public static class WorksheetService
     ///     An immutable dictionary mapping each non-empty header name to its corresponding cell value from the specified
     ///     row. If a header is duplicated, only the first occurrence is included.
     /// </returns>
-    public static IReadOnlyDictionary<string, string> GetRowContent(IXLRange contentRange, int rowIndex)
+    public static IReadOnlyDictionary<string, string> GetRowContent(this IXLRange contentRange, int rowIndex)
     {
         var headerCells = contentRange.FirstRow().Cells();
         var dataCells = contentRange.Row(rowIndex + 1).Cells();

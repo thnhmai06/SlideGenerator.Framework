@@ -6,4 +6,5 @@ namespace SlideGenerator.Framework.Features.Slide.Models;
 /// <param name="Id">The unique identifier of the object.</param>
 /// <param name="Name">The name of the object.</param>
 /// <param name="ImageBytes">The preview image data as a byte array.</param>
+/// Reviewed by @thnhmai06 at 05/03/2026
 public record ObjectPreview(uint Id, string Name, byte[] ImageBytes);

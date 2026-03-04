@@ -83,8 +83,6 @@ public sealed class RuleOfThirdsRoi : RoiCalculator
         var x = (int)MathF.Round(eyeCenterPoint.X - croppedSize.Width * eyeLineRatioX);
         var y = (int)MathF.Round(eyeCenterPoint.Y - croppedSize.Height * eyeLineRatioY);
 
-        return ManipulatingService.ClampToBorder(
-            new Rectangle(x, y, croppedSize.Width, croppedSize.Height),
-            new Rectangle(default, imageSize));
+        return new Rectangle(x, y, croppedSize.Width, croppedSize.Height).ClampIn(new Rectangle(default, imageSize));
     }
 }
