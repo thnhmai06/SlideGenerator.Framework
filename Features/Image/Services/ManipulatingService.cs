@@ -2,6 +2,7 @@ using System.Drawing;
 using OpenCvSharp;
 using Point = System.Drawing.Point;
 using CvSize = OpenCvSharp.Size;
+using Size = System.Drawing.Size;
 
 namespace SlideGenerator.Framework.Features.Image.Services;
 
@@ -9,7 +10,7 @@ namespace SlideGenerator.Framework.Features.Image.Services;
 ///     Provides static methods for manipulating images and geometric shapes, including cropping, resizing, and clamping
 ///     rectangles and points to specified bounds.
 /// </summary>
-/// Reviewed by @thnhmai06 at 01/03/2026 14:21:38 GMT+7
+/// Reviewed by @thnhmai06 at 05/03/2026
 public static class ManipulatingService
 {
     /// <summary>
@@ -59,7 +60,7 @@ public static class ManipulatingService
     ///     A rectangle with the same size as the input rectangle, unless it exceeds the border's dimensions, in which case
     ///     its size and position are adjusted to fit entirely within the border.
     /// </returns>
-    public static Rectangle ClampToBorder(Rectangle rect, Rectangle border)
+    public static Rectangle ClampIn(this Rectangle rect, Rectangle border)
     {
         var x = rect.X;
         var y = rect.Y;
@@ -100,7 +101,7 @@ public static class ManipulatingService
     ///     rectangle.
     /// </param>
     /// <returns>A new point whose X and Y coordinates are constrained to the borders of the specified rectangle.</returns>
-    public static Point ClampToBorder(Point point, Rectangle border)
+    public static Point ClampIn(this Point point, Rectangle border)
     {
         var x = Math.Clamp(point.X, border.Left, border.Right - 1);
         var y = Math.Clamp(point.Y, border.Top, border.Bottom - 1);
@@ -114,7 +115,7 @@ public static class ManipulatingService
     /// <param name="original">The original size (OpenCvSharp.Size).</param>
     /// <param name="target">The target size (OpenCvSharp.Size).</param>
     /// <returns>The largest size that has the same aspect ratio with the target size and fits within the original size.</returns>
-    public static CvSize GetMaxAspectSize(CvSize original, CvSize target)
+    public static CvSize GetMaxAspectSize(this CvSize original, CvSize target)
     {
         var originalAspect = original.Width / (double)original.Height;
         var targetAspect = target.Width / (double)target.Height;
@@ -134,5 +135,33 @@ public static class ManipulatingService
         width = Math.Min(width, original.Width);
         height = Math.Min(height, original.Height);
         return new CvSize(width, height);
+    }
+    
+    /// <summary>
+    ///     Get the largest size that has the same aspect ratio with the target size and fits within the original size.
+    /// </summary>
+    /// <param name="original">The original size.</param>
+    /// <param name="target">The target size.</param>
+    /// <returns>The largest size that has the same aspect ratio with the target size and fits within the original size.</returns>
+    public static Size GetMaxAspectSize(this Size original, Size target)
+    {
+        var originalAspect = original.Width / (double)original.Height;
+        var targetAspect = target.Width / (double)target.Height;
+
+        int width, height;
+        if (originalAspect >= targetAspect)
+        {
+            height = original.Height;
+            width = (int)Math.Round(height * targetAspect);
+        }
+        else
+        {
+            width = original.Width;
+            height = (int)Math.Round(width / targetAspect);
+        }
+
+        width = Math.Min(width, original.Width);
+        height = Math.Min(height, original.Height);
+        return new Size(width, height);
     }
 }

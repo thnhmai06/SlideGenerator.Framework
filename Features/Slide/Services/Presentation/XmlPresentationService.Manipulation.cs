@@ -4,7 +4,7 @@ using DocumentFormat.OpenXml.Presentation;
 
 namespace SlideGenerator.Framework.Features.Slide.Services.Presentation;
 
-/// Reviewed by @thnhmai06 at 01/03/2026 02:16:48 GMT+7
+/// Reviewed by @thnhmai06 at 05/03/2026
 public static partial class XmlPresentationService
 {
     /// <summary>
@@ -17,7 +17,7 @@ public static partial class XmlPresentationService
     ///     If below than 0 or greater than current total slides, appends to end.
     /// </param>
     /// <returns>The slide part of the copied slide.</returns>
-    public static SlidePart CloneSlide(PresentationDocument doc, string sourceRelId, int position = -1)
+    public static SlidePart CloneSlide(this PresentationDocument doc, string sourceRelId, int position = -1)
     {
         var presentationPart = doc.PresentationPart
                                ?? throw new InvalidOperationException(
@@ -140,28 +140,7 @@ public static partial class XmlPresentationService
             slideIdList.Append(newSlideId);
         else
             slideIdList.InsertAt(newSlideId, position - 1);
-
-        presentationPart.Presentation.Save();
         return newSlide;
-    }
-
-    /// <summary>
-    ///     Removes the slide at the specified position.
-    /// </summary>
-    /// <param name="doc">The presentation document.</param>
-    /// <param name="position">Position of the slide to remove (1-based).</param>
-    public static void RemoveSlide(PresentationDocument doc, int position)
-    {
-        var slideIdList = doc.PresentationPart?.Presentation?.SlideIdList;
-        if (slideIdList == null) return;
-
-        if (position < 1 || position > slideIdList.Count())
-            throw new ArgumentOutOfRangeException(nameof(position), "Position is out of range.");
-
-        var slide = slideIdList.ChildElements.Cast<SlideId>().ElementAt(position - 1);
-        slide?.Remove();
-
-        doc.PresentationPart?.Presentation?.Save();
     }
 
     private static void RemapRelIds(OpenXmlElement root, Dictionary<string, string> ridMap)
