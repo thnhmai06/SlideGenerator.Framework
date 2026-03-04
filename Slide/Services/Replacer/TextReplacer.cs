@@ -42,80 +42,6 @@ public static partial class TextReplacer
         return templates;
     }
 
-    /// <param name="slidePart">The slide part to scan.</param>
-    extension(SlidePart slidePart)
-    {
-        /// <summary>
-        ///     Scans a slide for Mustache placeholders and maps them to their containing shapes.
-        /// </summary>
-        /// <returns>A list of tuples linking the shape preview to the found placeholder.</returns>
-        public List<(Shape Shape, string Mustache)> ScanMustache()
-        {
-            var result = new List<(Shape, string)>();
-            if (slidePart.Slide == null) return result;
-
-            var shapes = slidePart.Slide!.Descendants<Shape>().Where(s => s.TextBody != null);
-            foreach (var shape in shapes)
-            {
-                var sb = new StringBuilder();
-                foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
-                {
-                    foreach (var run in paragraph.Descendants<Run>())
-                        sb.Append(run.Text?.Text ?? string.Empty);
-                    sb.Append(Environment.NewLine);
-                }
-
-                var fullText = sb.ToString();
-                var foundPlaceholders = fullText.ScanMustache();
-                if (foundPlaceholders.Count <= 0) continue;
-
-                result.AddRange(foundPlaceholders.Select(placeholder => (shape, placeholder)));
-            }
-
-            return result;
-        }
-        
-        public async Task<List<(Shape Shape, string Old, string New)>>
-            ReplaceMustacheAsync(ReplaceInstructions instructions)
-        {
-            var changeLog = new List<(Shape Shape, string Old, string New)>();
-
-            if (instructions.Count == 0) return changeLog;
-            var sanitized = SanitizeXmlValue(instructions);
-
-            var foundPlaceholders = slidePart.ScanMustache();
-            var targetShapes = new HashSet<Shape>(foundPlaceholders.Select(p => p.Shape));
-
-            foreach (var shape in targetShapes)
-                // for follow paragraph to save Bullet point
-            foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
-            {
-                var runs = paragraph.Descendants<Run>().ToList();
-                if (runs.Count == 0) continue;
-
-                var builder = new StringBuilder();
-                foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
-                var originalText = builder.ToString();
-
-                var newText = await RenderSafeAsync(Stubble, originalText, sanitized).ConfigureAwait(false);
-                if (newText == originalText) continue;
-                var keysInPara = originalText.ScanMustache();
-                foreach (var key in keysInPara)
-                    if (instructions.TryGetValue(key, out var val))
-                        changeLog.Add((shape, key, val));
-
-                runs[0].Text ??= new Text();
-                runs[0].Text!.Text = newText;
-
-                for (var i = 1; i < runs.Count; i++)
-                    if (runs[i].Text != null)
-                        runs[i].Text!.Text = string.Empty;
-            }
-
-            return changeLog;
-        }
-    }
-
     private static async Task<string> RenderSafeAsync(
         StubbleVisitorRenderer stubble,
         string text,
@@ -160,5 +86,79 @@ public static partial class TextReplacer
             buffer[count++] = ch;
 
         return new string(buffer, 0, count);
+    }
+
+    /// <param name="slidePart">The slide part to scan.</param>
+    extension(SlidePart slidePart)
+    {
+        /// <summary>
+        ///     Scans a slide for Mustache placeholders and maps them to their containing shapes.
+        /// </summary>
+        /// <returns>A list of tuples linking the shape preview to the found placeholder.</returns>
+        public List<(Shape Shape, string Mustache)> ScanMustache()
+        {
+            var result = new List<(Shape, string)>();
+            if (slidePart.Slide == null) return result;
+
+            var shapes = slidePart.Slide!.Descendants<Shape>().Where(s => s.TextBody != null);
+            foreach (var shape in shapes)
+            {
+                var sb = new StringBuilder();
+                foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
+                {
+                    foreach (var run in paragraph.Descendants<Run>())
+                        sb.Append(run.Text?.Text ?? string.Empty);
+                    sb.Append(Environment.NewLine);
+                }
+
+                var fullText = sb.ToString();
+                var foundPlaceholders = fullText.ScanMustache();
+                if (foundPlaceholders.Count <= 0) continue;
+
+                result.AddRange(foundPlaceholders.Select(placeholder => (shape, placeholder)));
+            }
+
+            return result;
+        }
+
+        public async Task<List<(Shape Shape, string Old, string New)>>
+            ReplaceMustacheAsync(ReplaceInstructions instructions)
+        {
+            var changeLog = new List<(Shape Shape, string Old, string New)>();
+
+            if (instructions.Count == 0) return changeLog;
+            var sanitized = SanitizeXmlValue(instructions);
+
+            var foundPlaceholders = slidePart.ScanMustache();
+            var targetShapes = new HashSet<Shape>(foundPlaceholders.Select(p => p.Shape));
+
+            foreach (var shape in targetShapes)
+                // for follow paragraph to save Bullet point
+            foreach (var paragraph in shape.TextBody!.Descendants<Paragraph>())
+            {
+                var runs = paragraph.Descendants<Run>().ToList();
+                if (runs.Count == 0) continue;
+
+                var builder = new StringBuilder();
+                foreach (var run in runs) builder.Append(run.Text?.Text ?? string.Empty);
+                var originalText = builder.ToString();
+
+                var newText = await RenderSafeAsync(Stubble, originalText, sanitized).ConfigureAwait(false);
+                if (newText == originalText) continue;
+                var keysInPara = originalText.ScanMustache();
+                foreach (var key in keysInPara)
+                    if (instructions.TryGetValue(key, out var val))
+                        changeLog.Add((shape, key, val));
+
+                runs[0].Text ??= new Text();
+                runs[0].Text!.Text = newText;
+
+                for (var i = 1; i < runs.Count; i++)
+                    if (runs[i].Text != null)
+                        runs[i].Text!.Text = string.Empty;
+            }
+
+            return changeLog;
+        }
     }
 }

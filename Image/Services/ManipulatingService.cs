@@ -136,7 +136,7 @@ public static class ManipulatingService
         height = Math.Min(height, original.Height);
         return new CvSize(width, height);
     }
-    
+
     /// <summary>
     ///     Get the largest size that has the same aspect ratio with the target size and fits within the original size.
     /// </summary>

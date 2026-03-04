@@ -43,7 +43,7 @@ public static class WorkbookService
                 var count = Math.Max(contentRange?.RowCount() - 1 ?? 0, 0);
                 result[name] = count;
             }
-        
+
             return result;
         }
     }
