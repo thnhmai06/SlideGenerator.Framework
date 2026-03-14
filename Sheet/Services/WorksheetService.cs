@@ -25,40 +25,57 @@ public static class WorksheetService
         return worksheet.RangeUsed(XLCellsUsedOptions.Contents);
     }
 
-    /// <summary>
-    ///     Retrieves the contents of a specified row from the given range, mapping each header to its corresponding cell
-    ///     value.
-    /// </summary>
-    /// <remarks>
-    ///     The method assumes that the first row of the range contains headers and that each subsequent
-    ///     row contains data. If a header cell is empty, its column is excluded from the result. The returned dictionary
-    ///     does not include duplicate header names.
-    /// </remarks>
     /// <param name="contentRange">
     ///     The range containing the table data, where the first row is expected to contain column
     ///     headers.
     /// </param>
-    /// <param name="rowIndex">
-    ///     The 1-based index of the data row to retrieve, excluding the header row. Must be greater than or equal to 0
-    ///     and less than the number of data rows in the range.
-    /// </param>
-    /// <returns>
-    ///     An immutable dictionary mapping each non-empty header name to its corresponding cell value from the specified
-    ///     row. If a header is duplicated, only the first occurrence is included.
-    /// </returns>
-    public static IReadOnlyDictionary<string, string> GetRowContent(this IXLRange contentRange, int rowIndex)
+    extension(IXLRange contentRange)
     {
-        var headerCells = contentRange.FirstRow().Cells();
-        var dataCells = contentRange.Row(rowIndex + 1).Cells();
+        /// <summary>
+        ///    Retrieves the column headers from the first row of the specified content range.
+        /// </summary>
+        /// <returns>
+        ///     A list of strings representing the column headers, in the order they appear in the first row of the
+        ///     range. If a header cell is empty, it will be included as an empty string in the list.
+        /// </returns>
+        public IReadOnlyList<string> GetHeadersName()
+        {
+            return contentRange.FirstRow().Cells()
+                .Select(cell => cell.GetString())
+                .ToList();
+        }
 
-        return headerCells
-            .Zip(dataCells, (header, cell) => new
-            {
-                Key = header.GetString(),
-                Value = cell.GetString()
-            })
-            .Where(x => !string.IsNullOrEmpty(x.Key))
-            .DistinctBy(x => x.Key)
-            .ToDictionary(x => x.Key, x => x.Value);
+        /// <summary>
+        ///     Retrieves the contents of a specified row from the given range, mapping each header to its corresponding cell
+        ///     value.
+        /// </summary>
+        /// <remarks>
+        ///     The method assumes that the first row of the range contains headers and that each subsequent
+        ///     row contains data. If a header cell is empty, its column is excluded from the result. The returned dictionary
+        ///     does not include duplicate header names.
+        /// </remarks>
+        /// <param name="rowIndex">
+        ///     The 1-based index of the data row to retrieve, excluding the header row. Must be greater than or equal to 0
+        ///     and less than the number of data rows in the range.
+        /// </param>
+        /// <returns>
+        ///     An immutable dictionary mapping each non-empty header name to its corresponding cell value from the specified
+        ///     row. If a header is duplicated, only the first occurrence is included.
+        /// </returns>
+        public IReadOnlyDictionary<string, string> GetRowContent(int rowIndex)
+        {
+            var headerCells = contentRange.FirstRow().Cells();
+            var dataCells = contentRange.Row(rowIndex + 1).Cells();
+
+            return headerCells
+                .Zip(dataCells, (header, cell) => new
+                {
+                    Key = header.GetString(),
+                    Value = cell.GetString()
+                })
+                .Where(x => !string.IsNullOrEmpty(x.Key))
+                .DistinctBy(x => x.Key)
+                .ToDictionary(x => x.Key, x => x.Value);
+        }
     }
 }
