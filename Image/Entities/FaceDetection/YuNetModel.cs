@@ -53,7 +53,7 @@ public sealed class YuNetModel(
     public override Task<bool> InitAsync()
     {
         if (!IsModelAvailable)
-            _model = new FaceDetectorYN(
+            _model = FaceDetectorYN.Create(
                 modelPath, configPath ?? string.Empty, inputSize,
                 scoreThreshold, nmsThreshold, topK, backendId, targetId);
 
